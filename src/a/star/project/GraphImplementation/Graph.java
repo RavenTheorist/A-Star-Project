@@ -122,6 +122,8 @@ public class Graph
                                 edges.add(new Edge(firstVertex, secondVertex, weight));
                             }
                         }
+                        // Close text file
+                        textFile.close();
 		}
                 catch (FileNotFoundException e)
                 {
@@ -188,6 +190,40 @@ public class Graph
         }
         
         return result;
+    }
+    
+    
+    
+    /*
+     * Other useful methods
+     */
+    
+    // Returns the coordiante x of the farthest vertex at the x axis
+    public int getMaxXCoordinate()
+    {
+        int maxX = 0;
+        
+        for (int i = 0; i < this.n; i++)
+        {
+            if (this.vertices.get(i).getX() > maxX)
+                maxX = this.vertices.get(i).getX();
+        }
+        
+        return maxX;
+    }
+    
+    // Returns the coordiante y of the farthest vertex at the y axis
+    public int getMaxYCoordinate()
+    {
+        int maxY = 0;
+        
+        for (int i = 0; i < this.n; i++)
+        {
+            if (this.vertices.get(i).getY() > maxY)
+                maxY = this.vertices.get(i).getY();
+        }
+        
+        return maxY;
     }
     
     
