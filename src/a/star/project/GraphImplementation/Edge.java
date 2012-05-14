@@ -1,4 +1,4 @@
-package a.star.project;
+package a.star.project.GraphImplementation;
 
 /**
  * Edge Implementation Class

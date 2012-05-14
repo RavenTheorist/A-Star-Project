@@ -1,5 +1,7 @@
 package a.star.project;
 
+import a.star.project.Visualization.Frame;
+import a.star.project.GraphImplementation.Graph;
 import java.io.IOException;
 
 /**
@@ -14,5 +16,6 @@ public class AStarProject
     {
         Graph graph = new Graph("graph1.txt");
         System.out.println(graph.toString());
+        Frame f = new Frame();
     }
 }

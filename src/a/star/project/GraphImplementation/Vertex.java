@@ -1,4 +1,4 @@
-package a.star.project;
+package a.star.project.GraphImplementation;
 
 /**
  * Vertex Implementation Class
