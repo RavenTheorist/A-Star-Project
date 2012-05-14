@@ -15,7 +15,7 @@ import java.util.logging.Logger;
  * 
  * @author Amine Elkhalsi <aminekhalsi@hotmail.com>
  */
-public class Panel extends JPanel
+public final class Panel extends JPanel
 {
     // The max X and Y vertices coordinates needs to be passed to the JFrame to make it adapt its size
     private int maxXCoordinate;
@@ -41,12 +41,27 @@ public class Panel extends JPanel
             Logger.getLogger(Panel.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        // Calculating max X and Y coordinates of all vertices in order to adapt the JFrame's size
+        // Calculating max and min for both X and Y coordinates of all vertices in order to adapt the JFrame's size
         this.maxXCoordinate = graph.getMaxXCoordinate();
         this.maxYCoordinate = graph.getMaxYCoordinate();
+        
+        int minXCoordinate = graph.getMinXCoordinate();
+        int minYCoordinate = graph.getMinYCoordinate();
+        
+        // If the smallest vertex at the x coordinates is too far
+        if (minXCoordinate > 50)
+        {
+            // Bring all the graph vertices closer at the x axis
+            graph = Graph.bringVerticesCloserBy_X(graph, minXCoordinate - 50);
+        }
+        
+        // If the smallest vertex at the y coordinates is too far
+        if (minYCoordinate > 50)
+        {
+            // Bring all the graph vertices closer at the y axis
+            graph = Graph.bringVerticesCloserBy_Y(graph, minYCoordinate - 50);
+        }
     }
-    
-    
     
     /*
      * @Overrides
@@ -62,12 +77,32 @@ public class Panel extends JPanel
         g2d.setFont(font);
         
         
+        // Edges Visualization
+        for (int i = 0; i < getGraph().getM(); i++)
+        {
+            // Extract the coordinates of both of the vertices that composes the edge
+            int firstVertex_X = getGraph().getEdges().get(i).getFirstVertex().getX();
+            int firstVertex_Y = getGraph().getEdges().get(i).getFirstVertex().getY();
+            int secondVertex_X = getGraph().getEdges().get(i).getSecondVertex().getX();
+            int secondVertex_Y = getGraph().getEdges().get(i).getSecondVertex().getY();
+            
+            
+            
+            // Draw a line between the two vertices
+            g.setColor(Color.blue);
+            g.drawLine(firstVertex_X + 25, firstVertex_Y + 25, secondVertex_X + 25, secondVertex_Y + 25);
+            
+            /*// Print the name of the vertex at a position that is relative to the vertex coordinates (right in the center of the circle)
+            g2d.setColor(Color.red);
+            g2d.drawString(graph.getVertices().get(i).getName(), x + 14, y + 32);*/
+        }
+        
         // Vertices Visualization
-        for (int i = 0; i < graph.getN(); i++)
+        for (int i = 0; i < getGraph().getN(); i++)
         {
             // Extract vertice coordinates
-            int x = graph.getVertices().get(i).getX();
-            int y = graph.getVertices().get(i).getY();
+            int x = getGraph().getVertices().get(i).getX();
+            int y = getGraph().getVertices().get(i).getY();
             
             // Draw a circle at the extracted coordinates
             g.setColor(Color.black);
@@ -75,7 +110,7 @@ public class Panel extends JPanel
             
             // Print the name of the vertex at a position that is relative to the vertex coordinates (right in the center of the circle)
             g2d.setColor(Color.red);
-            g2d.drawString(graph.getVertices().get(i).getName(), x + 14, y + 32);
+            g2d.drawString(getGraph().getVertices().get(i).getName(), x + 14, y + 32);
         }
     }
     
@@ -104,6 +139,14 @@ public class Panel extends JPanel
     {
         this.maxYCoordinate = maxYCoordinate;
     }
-    
-    
+
+    public Graph getGraph()
+    {
+        return graph;
+    }
+
+    public void setGraph(Graph graph)
+    {
+        this.graph = graph;
+    }
 }

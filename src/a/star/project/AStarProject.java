@@ -1,7 +1,6 @@
 package a.star.project;
 
 import a.star.project.Visualization.Frame;
-import a.star.project.GraphImplementation.Graph;
 import java.io.IOException;
 
 /**

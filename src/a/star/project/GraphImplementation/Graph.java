@@ -45,6 +45,14 @@ public class Graph
         this.m = tempGraph.getM();
     }
     
+    public Graph(Graph graph)
+    {
+        this.vertices = graph.getVertices();
+        this.edges = graph.getEdges();
+        this.n = graph.getN();
+        this.m = graph.getM();
+    }
+    
     
     
     /*
@@ -137,7 +145,39 @@ public class Graph
                 // Store and return the resulted graph
                 Graph tempGraph = new Graph(vertices, edges);
                 return tempGraph;
-	}
+    }
+    
+    // Bring all of the graph vertices closer at the x axis by given distance
+    public static Graph bringVerticesCloserBy_X(Graph graph, int distance)
+    {
+        // First we make a copy of the sent graph
+        Graph tempGraph = new Graph(graph);
+        
+        // For each vertex
+        for (int i = 0 ; i < tempGraph.getN() ; i++)
+        {
+            // Make it closer by the given distance at the x axis
+            tempGraph.getVertices().get(i).setX(tempGraph.getVertices().get(i).getX() - distance);
+        }
+        
+        return tempGraph;
+    }
+    
+    // Bring all of the graph vertices closer at the y axis by given distance
+    public static Graph bringVerticesCloserBy_Y(Graph graph, int distance)
+    {
+        // First we make a copy of the sent graph
+        Graph tempGraph = new Graph(graph);
+        
+        // For each vertex
+        for (int i = 0 ; i < tempGraph.getN() ; i++)
+        {
+            // Make it closer by the given distance at the y axis
+            tempGraph.getVertices().get(i).setY(tempGraph.getVertices().get(i).getY() - distance);
+        }
+        
+        return tempGraph;
+    }
     
     
     
@@ -224,6 +264,34 @@ public class Graph
         }
         
         return maxY;
+    }
+    
+    // Returns the smallest x coordiante of all vertices
+    public int getMinXCoordinate()
+    {
+        int minX = this.vertices.get(0).getX();
+        
+        for (int i = 1; i < this.n; i++)
+        {
+            if (this.vertices.get(i).getX() < minX)
+                minX = this.vertices.get(i).getX();
+        }
+        
+        return minX;
+    }
+    
+    // Returns the smallest y coordiante of all vertices
+    public int getMinYCoordinate()
+    {
+        int minY = this.vertices.get(0).getY();
+        
+        for (int i = 1; i < this.n; i++)
+        {
+            if (this.vertices.get(i).getY() < minY)
+                minY = this.vertices.get(i).getY();
+        }
+        
+        return minY;
     }
     
     
