@@ -22,7 +22,7 @@ public class Frame extends JFrame
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
-        // Key
+        // Enable the focus when pressing the arrow keys
         panel.setFocusable(true);
         panel.requestFocus();
         

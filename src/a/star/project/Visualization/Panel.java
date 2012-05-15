@@ -77,9 +77,12 @@ public final class Panel extends JPanel implements KeyListener
     public void paintComponent(Graphics g)
     {
         // Panel's defaut parameters initialization
+        g.setColor(Color.LIGHT_GRAY);
+        g.fillRect(0, 0, this.maxXCoordinate + 100, this.maxYCoordinate + 100);
         Graphics2D g2d = (Graphics2D)g;
         Font font = new Font("Arial Black", Font.PLAIN, 16);
         g2d.setFont(font);
+        
         
         
         // Edges Visualization
@@ -107,8 +110,6 @@ public final class Panel extends JPanel implements KeyListener
             g2d.setColor(Color.getHSBColor(163, 73, 164));
             g.setColor(Color.red);
             g.drawRect(middleX + 16, middleY + 16, 17, 17);
-            
-            System.out.println("Edge " + i + " : " + this.graph.getEdges().get(i).toString2());
             
             // Print the weight of the edge right in the center of the previously created rectangle
             g2d.setColor(Color.getHSBColor(163, 73, 164));
@@ -139,7 +140,6 @@ public final class Panel extends JPanel implements KeyListener
             // Print the name of the vertex at a position that is relative to the vertex coordinates (right in the center of the circle)
             g2d.setColor(Color.white);
             g2d.drawString(this.graph.getVertices().get(i).getName(), x + 14, y + 32);
-            System.out.println("Vertex" + i + " : " + this.graph.getVertices().get(i));
         }
     }
     
@@ -158,8 +158,43 @@ public final class Panel extends JPanel implements KeyListener
     @Override
     public void keyPressed(KeyEvent e)
     {
+        // If the UP arrow key is pressed
         if (e.getKeyCode() == KeyEvent.VK_UP)
         {
+            for (int i = 0 ; i < this.graph.getN() ; i++)
+            {
+                this.graph.getVertices().get(i).setY(this.graph.getVertices().get(i).getY() - 2);
+            }
+            this.repaint();
+        }
+        
+        // If the DOWN arrow key is pressed
+        if (e.getKeyCode() == KeyEvent.VK_DOWN)
+        {
+            for (int i = 0 ; i < this.graph.getN() ; i++)
+            {
+                this.graph.getVertices().get(i).setY(this.graph.getVertices().get(i).getY() + 2);
+            }
+            this.repaint();
+        }
+        
+        // If the LEFT arrow key is pressed
+        if (e.getKeyCode() == KeyEvent.VK_LEFT)
+        {
+            for (int i = 0 ; i < this.graph.getN() ; i++)
+            {
+                this.graph.getVertices().get(i).setX(this.graph.getVertices().get(i).getX() - 2);
+            }
+            this.repaint();
+        }
+        
+        // If the RIGHT arrow key is pressed
+        if (e.getKeyCode() == KeyEvent.VK_RIGHT)
+        {
+            for (int i = 0 ; i < this.graph.getN() ; i++)
+            {
+                this.graph.getVertices().get(i).setX(this.graph.getVertices().get(i).getX() + 2);
+            }
             this.repaint();
         }
         //throw new UnsupportedOperationException("Not supported yet.");
