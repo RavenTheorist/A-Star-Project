@@ -34,7 +34,7 @@ public final class Panel extends JPanel
     {
         try
         {
-            graph = new Graph("graph1.txt");
+            graph = new Graph("graph2.txt");
         }
         catch (IOException ex)
         {
@@ -71,7 +71,6 @@ public final class Panel extends JPanel
     public void paintComponent(Graphics g)
     {
         // Panel's defaut parameters initialization
-        this.setBackground(Color.darkGray);
         Graphics2D g2d = (Graphics2D)g;
         Font font = new Font("Arial Black", Font.PLAIN, 16);
         g2d.setFont(font);
@@ -99,15 +98,21 @@ public final class Panel extends JPanel
             // Draw a rectangle at the middle of each edge
             g.setColor(Color.white);
             g.fillRect(middleX + 16, middleY + 16, 17, 17);
+            g2d.setColor(Color.getHSBColor(163, 73, 164));
             g.setColor(Color.red);
             g.drawRect(middleX + 16, middleY + 16, 17, 17);
             
             System.out.println("Edge " + i + " : " + this.graph.getEdges().get(i).toString2());
             
             // Print the weight of the edge right in the center of the previously created rectangle
-            g2d.setColor(Color.black);
-            g2d.drawString(String.valueOf(this.graph.getEdges().get(i).getWeight()), middleX + 20, middleY + 31);
+            g2d.setColor(Color.getHSBColor(163, 73, 164));
+            font = new Font("Arial Black", Font.ITALIC, 16);
+            g2d.setFont(font);
+            g2d.drawString(String.valueOf(this.graph.getEdges().get(i).getWeight()), middleX + 19, middleY + 31);
         }
+        
+        font = new Font("Arial Black", Font.PLAIN, 16);
+        g2d.setFont(font);
         
         // Vertices Visualization
         for (int i = 0; i < this.graph.getN(); i++)
@@ -121,7 +126,8 @@ public final class Panel extends JPanel
             if ((i == 0) || (i == this.graph.getN() - 1))
                 g.setColor(Color.pink);
             g.fillOval(x, y, 50, 50);
-            g.setColor(Color.black);
+            // ...with some circle decorations
+            g.setColor(Color.blue);
             g.drawOval(x, y, 50, 50);
             
             // Print the name of the vertex at a position that is relative to the vertex coordinates (right in the center of the circle)

@@ -1,5 +1,6 @@
 package a.star.project.Visualization;
 
+import java.awt.Color;
 import javax.swing.JFrame;
 
 /**
@@ -16,7 +17,7 @@ public class Frame extends JFrame
         this.setTitle("A Star Visualization");
         Panel panel = new Panel();
         this.setSize(panel.getMaxXCoordinate() + 100, panel.getMaxYCoordinate() + 100);
-        
+        //this.setBackground(Color.black);
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
