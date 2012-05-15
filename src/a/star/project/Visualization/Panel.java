@@ -34,7 +34,7 @@ public final class Panel extends JPanel
     {
         try
         {
-            graph = new Graph("graph1.txt");
+            graph = new Graph("graph2.txt");
         }
         catch (IOException ex)
         {
@@ -92,6 +92,12 @@ public final class Panel extends JPanel
             g.setColor(Color.blue);
             g.drawLine(firstVertex_X + 25, firstVertex_Y + 25, secondVertex_X + 25, secondVertex_Y + 25);
             
+            // Draw a rectangle at the middle of each edge
+            g.setColor(Color.white);
+            g.fillRect(((firstVertex_X - secondVertex_X) / 2) - 7, ((firstVertex_Y - secondVertex_Y) / 2) - 7, 14, 14);
+            g.setColor(Color.red);
+            g.drawRect(((firstVertex_X - secondVertex_X) / 2) - 7, ((firstVertex_Y - secondVertex_Y) / 2) - 7, 14, 14);
+            
             /*// Print the name of the vertex at a position that is relative to the vertex coordinates (right in the center of the circle)
             g2d.setColor(Color.red);
             g2d.drawString(graph.getVertices().get(i).getName(), x + 14, y + 32);*/
@@ -105,11 +111,15 @@ public final class Panel extends JPanel
             int y = getGraph().getVertices().get(i).getY();
             
             // Draw a circle at the extracted coordinates
-            g.setColor(Color.black);
+            g.setColor(Color.gray);
+            if ((i == 0) || (i == getGraph().getN() - 1))
+                g.setColor(Color.pink);
             g.fillOval(x, y, 50, 50);
+            g.setColor(Color.black);
+            g.drawOval(x, y, 50, 50);
             
             // Print the name of the vertex at a position that is relative to the vertex coordinates (right in the center of the circle)
-            g2d.setColor(Color.red);
+            g2d.setColor(Color.white);
             g2d.drawString(getGraph().getVertices().get(i).getName(), x + 14, y + 32);
         }
     }
