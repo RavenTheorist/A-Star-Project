@@ -96,7 +96,7 @@ public class Graph
                                 int y = Integer.valueOf(s[2]).intValue();
                                 
                                 // Store the extracted vertex's informations
-                                vertices.add(new Vertex(vertexName, x, y));
+                                vertices.add(new Vertex(vertexName, x, y, new ArrayList<Vertex>()));
                             }
                         }
                         
@@ -108,7 +108,7 @@ public class Graph
                             {
                                 s = line.split(" ");
                                 
-                                // We seek both vertices of the edge in the previously stored vertices array
+                                // We seek for the two vertices of the edge in the previously stored vertices array
                                 Vertex firstVertex = null, secondVertex = null;
                                 for (int j = 1; j <= 2; j++)
                                 {
@@ -128,6 +128,10 @@ public class Graph
                                 
                                 // Store the extracted edge's informations
                                 edges.add(new Edge(firstVertex, secondVertex, weight));
+                                
+                                // Update the neighborhood list of each of the two vertices
+                                firstVertex.addNeighbor(secondVertex);
+                                secondVertex.addNeighbor(firstVertex);
                             }
                         }
                         // Close text file

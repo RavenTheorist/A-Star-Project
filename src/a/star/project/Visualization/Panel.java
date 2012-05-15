@@ -67,6 +67,11 @@ public final class Panel extends JPanel implements KeyListener
             // Bring all the graph vertices closer at the y axis
             graph = Graph.bringVerticesCloserBy_Y(graph, minYCoordinate - 50);
         }
+        
+        for (int i = 0; i < this.graph.getN(); i++)
+        {
+              System.out.println(this.graph.getVertices().get(i).toString3());
+        }
     }
     
     /*
