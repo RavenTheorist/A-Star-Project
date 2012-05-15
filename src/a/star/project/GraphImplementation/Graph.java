@@ -45,14 +45,18 @@ public final class Graph
         this.edges = tempGraph.getEdges();
         this.n = tempGraph.getN();
         this.m = tempGraph.getM();
+        this.minimalPath = AStar(this.vertices.get(0), this.getVertices().get(this.getVertices().size()-1));
         
-        this.minimalPath = null;
-        
-        this.minimalPath = new ArrayList<>(AStar(this.vertices.get(0), this.getVertices().get(this.getVertices().size()-1)));
+        System.out.println("Minimal Path :");
         
         for (int i = 0 ; i < this.minimalPath.size() ; i++)
-            System.out.println(this.minimalPath.get(i) + ", ");
+        {
+                System.out.println(this.minimalPath.get(i).getName());
+                
+        }
+            
     }
+    
     
     public Graph(Graph graph)
     {
@@ -86,7 +90,7 @@ public final class Graph
         
         while (!Open.isEmpty())
         {
-            /*System.out.println("\nOpen : ");
+            System.out.println("\nOpen : ");
             for (int i = 0 ; i < Open.size() ; i++)
             {
                 System.out.println(Open.get(i).getName() + ",");
@@ -95,22 +99,28 @@ public final class Graph
             for (int i = 0 ; i < Close.size() ; i++)
             {
                 System.out.print(Close.get(i).getName() + ",");
-            }*/
+            }
             System.out.println("\n");
             
             // Extract x the vertex with the minimal f
-            int minimalF = Open.get(0).getF();
+            int minimalF = Open.get(0).getG();
             Vertex x = Open.get(0);
             for (int i = 1 ; i < Open.size() ; i++)
             {
-                if (minimalF > Open.get(i).getF())
+                if (minimalF > Open.get(i).getG())
                 {
-                    minimalF = Open.get(i).getF();
+                    minimalF = Open.get(i).getG();
                     x = Open.get(i);
                 }
             }
             
-            System.out.println("minimalV : " + x);
+            for (int i = 1 ; i < Open.size() ; i++)
+            {
+                if (Open.get(i).getName().equals(x.getName()))
+                    Open.remove(i);
+            }
+            
+            //System.out.println("minimalV : " + x);
             
             Close.add(new Vertex(x));
             
@@ -139,13 +149,13 @@ public final class Graph
                     {
                         if (((this.getEdges().get(i).getFirstVertex().getName().equals(x.getName())) && (this.getEdges().get(i).getSecondVertex().getName().equals(y.getName()))) || ((this.getEdges().get(i).getFirstVertex().getName().equals(y.getName())) && (this.getEdges().get(i).getSecondVertex().getName().equals(x.getName()))))
                             costXY = this.getEdges().get(i).getWeight();
-                        System.out.println("COST : " + costXY);
+                        //System.out.println("COST : " + costXY);
                     }
                     if ((!containsY) || (y.getG() > (x.getG() + costXY)))
                     {
                         y.setG(x.getG() + costXY);
-                        y.setF(y.getG() + y.getH());
-                        y.setParent(x);
+                        y.setF(y.getG());
+                        y.setParent(new Vertex(x));
                         Open.add(y);
                     }
                 }
