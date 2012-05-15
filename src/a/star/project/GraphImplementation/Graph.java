@@ -9,7 +9,7 @@ import java.util.ArrayList;
  * @author Amine Elkhalsi <aminekhalsi@hotmail.com>
  */
 
-public class Graph
+public final class Graph
 {
     // Vertices' List
     private ArrayList<Vertex> vertices;
@@ -19,6 +19,8 @@ public class Graph
     private int n;
     // Number of edges
     private int m;
+    // Minimal Path (A*)
+    private ArrayList<Vertex> minimalPath;
     
     
     
@@ -43,6 +45,13 @@ public class Graph
         this.edges = tempGraph.getEdges();
         this.n = tempGraph.getN();
         this.m = tempGraph.getM();
+        
+        this.minimalPath = null;
+        
+        this.minimalPath = new ArrayList<>(AStar(this.vertices.get(0), this.getVertices().get(this.getVertices().size()-1)));
+        
+        for (int i = 0 ; i < this.minimalPath.size() ; i++)
+            System.out.println(this.minimalPath.get(i) + ", ");
     }
     
     public Graph(Graph graph)
@@ -51,6 +60,99 @@ public class Graph
         this.edges = graph.getEdges();
         this.n = graph.getN();
         this.m = graph.getM();
+    }
+    
+    
+    
+    /*
+     * A* Methods
+     */
+    
+    public ArrayList<Vertex> AStar(Vertex source, Vertex target)
+    {
+        // Objects Initialization
+        Vertex s = source;
+        Vertex t = target;
+        ArrayList<Vertex> Open;
+        ArrayList<Vertex> Close;
+        
+        // Initialization
+        Open = new ArrayList<>();
+        Close = new ArrayList<>();
+        Open.add(new Vertex(s));
+        s.setG(0);
+        s.setF(s.getH());
+        System.out.println("g(s) : " + s.getF());
+        
+        while (!Open.isEmpty())
+        {
+            /*System.out.println("\nOpen : ");
+            for (int i = 0 ; i < Open.size() ; i++)
+            {
+                System.out.println(Open.get(i).getName() + ",");
+            }
+            System.out.println("\nClose : ");
+            for (int i = 0 ; i < Close.size() ; i++)
+            {
+                System.out.print(Close.get(i).getName() + ",");
+            }*/
+            System.out.println("\n");
+            
+            // Extract x the vertex with the minimal f
+            int minimalF = Open.get(0).getF();
+            Vertex x = Open.get(0);
+            for (int i = 1 ; i < Open.size() ; i++)
+            {
+                if (minimalF > Open.get(i).getF())
+                {
+                    minimalF = Open.get(i).getF();
+                    x = Open.get(i);
+                }
+            }
+            
+            System.out.println("minimalV : " + x);
+            
+            Close.add(new Vertex(x));
+            
+            if (x.getName().equals(target.getName()))
+            {
+                return Close;
+            }
+            else
+            {
+                for (Vertex y : x.getNeighbors())
+                {
+                    boolean containsY = false;
+                    for (int i = 0 ; i < Open.size() ; i++)
+                    {
+                        if (Open.get(i).getName().equals(y.getName()))
+                            containsY = true;
+                    }
+                    for (int i = 0 ; i < Close.size() ; i++)
+                    {
+                        if (Close.get(i).getName().equals(y.getName()))
+                            containsY = true;
+                    }
+                    
+                    int costXY = 0;
+                    for (int i = 0 ; i < this.getEdges().size() ; i++)
+                    {
+                        if (((this.getEdges().get(i).getFirstVertex().getName().equals(x.getName())) && (this.getEdges().get(i).getSecondVertex().getName().equals(y.getName()))) || ((this.getEdges().get(i).getFirstVertex().getName().equals(y.getName())) && (this.getEdges().get(i).getSecondVertex().getName().equals(x.getName()))))
+                            costXY = this.getEdges().get(i).getWeight();
+                        System.out.println("COST : " + costXY);
+                    }
+                    if ((!containsY) || (y.getG() > (x.getG() + costXY)))
+                    {
+                        y.setG(x.getG() + costXY);
+                        y.setF(y.getG() + y.getH());
+                        y.setParent(x);
+                        Open.add(y);
+                    }
+                }
+            }
+        }
+        
+        return null;
     }
     
     

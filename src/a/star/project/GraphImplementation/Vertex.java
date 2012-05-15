@@ -18,6 +18,16 @@ public class Vertex
     private int y;
     // List of the neighbors of the vertex
     private ArrayList<Vertex> neighbors;
+    
+    /// A* purpose attributes :
+    // Distance
+    private int g;
+    // Heuristic
+    private int h;
+    // Total estimation of the minimal distance
+    private int f;
+    // Parent
+    private Vertex parent;
 
 
     
@@ -31,6 +41,10 @@ public class Vertex
         this.x = 0;
         this.y = 0;
         this.neighbors = null;
+        
+        this.g = (int) Double.POSITIVE_INFINITY;
+        this.h = (int) Double.POSITIVE_INFINITY;
+        this.f = (int) Double.POSITIVE_INFINITY;
     }
     
     public Vertex(String name, int x, int y)
@@ -39,6 +53,10 @@ public class Vertex
         this.x = x;
         this.y = y;
         this.neighbors = null;
+        
+        this.g = (int) Double.POSITIVE_INFINITY;
+        this.h = (int) Double.POSITIVE_INFINITY;
+        this.f = (int) Double.POSITIVE_INFINITY;
     }
     
     public Vertex(String name, int x, int y, ArrayList<Vertex> neighbors)
@@ -47,6 +65,10 @@ public class Vertex
         this.x = x;
         this.y = y;
         this.neighbors = neighbors;
+        
+        this.g = (int) Double.POSITIVE_INFINITY;
+        this.h = (int) Double.POSITIVE_INFINITY;
+        this.f = (int) Double.POSITIVE_INFINITY;
     }
     
     public Vertex(Vertex vertex)
@@ -55,6 +77,10 @@ public class Vertex
         this.x = vertex.getX();
         this.y = vertex.getY();
         this.neighbors = vertex.getNeighbors();
+        
+        this.g = (int) Double.POSITIVE_INFINITY;
+        this.h = (int) Double.POSITIVE_INFINITY;
+        this.f = (int) Double.POSITIVE_INFINITY;
     }
     
     
@@ -144,5 +170,45 @@ public class Vertex
     public void setNeighbors(ArrayList<Vertex> neighbors)
     {
         this.neighbors = neighbors;
+    }
+
+    public int getG()
+    {
+        return g;
+    }
+
+    public void setG(int g)
+    {
+        this.g = g;
+    }
+
+    public int getH()
+    {
+        return h;
+    }
+
+    public void setH(int h)
+    {
+        this.h = h;
+    }
+
+    public int getF()
+    {
+        return f;
+    }
+
+    public void setF(int f)
+    {
+        this.f = f;
+    }
+
+    public Vertex getParent()
+    {
+        return parent;
+    }
+
+    public void setParent(Vertex parent)
+    {
+        this.parent = parent;
     }
 }
