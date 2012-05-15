@@ -6,6 +6,8 @@ import java.awt.Font;
 import javax.swing.JPanel;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,7 +17,7 @@ import java.util.logging.Logger;
  * 
  * @author Amine Elkhalsi <aminekhalsi@hotmail.com>
  */
-public final class Panel extends JPanel
+public final class Panel extends JPanel implements KeyListener
 {
     // The max X and Y vertices coordinates needs to be passed to the JFrame to make it adapt its size
     private int maxXCoordinate;
@@ -32,9 +34,13 @@ public final class Panel extends JPanel
     
     public Panel()
     {
+        // Add Key Listener to enable moving the graph using the arrow keys
+        this.addKeyListener(this);
+        
+        // Creating graph form text file
         try
         {
-            graph = new Graph("graph2.txt");
+            graph = new Graph("graph1.txt");
         }
         catch (IOException ex)
         {
@@ -135,6 +141,34 @@ public final class Panel extends JPanel
             g2d.drawString(this.graph.getVertices().get(i).getName(), x + 14, y + 32);
             System.out.println("Vertex" + i + " : " + this.graph.getVertices().get(i));
         }
+    }
+    
+    
+    
+    /*
+     * @ Implementations' Overrides
+     */
+    
+    @Override
+    public void keyTyped(KeyEvent e)
+    {
+        //throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e)
+    {
+        if (e.getKeyCode() == KeyEvent.VK_UP)
+        {
+            this.repaint();
+        }
+        //throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e)
+    {
+        //throw new UnsupportedOperationException("Not supported yet.");
     }
     
     
