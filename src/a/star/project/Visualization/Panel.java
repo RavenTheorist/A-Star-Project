@@ -34,7 +34,7 @@ public final class Panel extends JPanel
     {
         try
         {
-            graph = new Graph("graph2.txt");
+            graph = new Graph("graph1.txt");
         }
         catch (IOException ex)
         {
@@ -78,13 +78,13 @@ public final class Panel extends JPanel
         
         
         // Edges Visualization
-        for (int i = 0; i < getGraph().getM(); i++)
+        for (int i = 0; i < this.graph.getM(); i++)
         {
             // Extract the coordinates of both of the vertices that composes the edge
-            int firstVertex_X = getGraph().getEdges().get(i).getFirstVertex().getX();
-            int firstVertex_Y = getGraph().getEdges().get(i).getFirstVertex().getY();
-            int secondVertex_X = getGraph().getEdges().get(i).getSecondVertex().getX();
-            int secondVertex_Y = getGraph().getEdges().get(i).getSecondVertex().getY();
+            int firstVertex_X = this.graph.getEdges().get(i).getFirstVertex().getX();
+            int firstVertex_Y = this.graph.getEdges().get(i).getFirstVertex().getY();
+            int secondVertex_X = this.graph.getEdges().get(i).getSecondVertex().getX();
+            int secondVertex_Y = this.graph.getEdges().get(i).getSecondVertex().getY();
             
             
             
@@ -92,27 +92,33 @@ public final class Panel extends JPanel
             g.setColor(Color.blue);
             g.drawLine(firstVertex_X + 25, firstVertex_Y + 25, secondVertex_X + 25, secondVertex_Y + 25);
             
+            // Calculate the middle of the edge
+            int middleX = (firstVertex_X + secondVertex_X) / 2;
+            int middleY = (firstVertex_Y + secondVertex_Y) / 2;
+            
             // Draw a rectangle at the middle of each edge
             g.setColor(Color.white);
-            g.fillRect(((firstVertex_X - secondVertex_X) / 2) - 7, ((firstVertex_Y - secondVertex_Y) / 2) - 7, 14, 14);
+            g.fillRect(middleX + 16, middleY + 16, 17, 17);
             g.setColor(Color.red);
-            g.drawRect(((firstVertex_X - secondVertex_X) / 2) - 7, ((firstVertex_Y - secondVertex_Y) / 2) - 7, 14, 14);
+            g.drawRect(middleX + 16, middleY + 16, 17, 17);
             
-            /*// Print the name of the vertex at a position that is relative to the vertex coordinates (right in the center of the circle)
-            g2d.setColor(Color.red);
-            g2d.drawString(graph.getVertices().get(i).getName(), x + 14, y + 32);*/
+            System.out.println("Edge " + i + " : " + this.graph.getEdges().get(i).toString2());
+            
+            // Print the weight of the edge right in the center of the previously created rectangle
+            g2d.setColor(Color.black);
+            g2d.drawString(String.valueOf(this.graph.getEdges().get(i).getWeight()), middleX + 20, middleY + 31);
         }
         
         // Vertices Visualization
-        for (int i = 0; i < getGraph().getN(); i++)
+        for (int i = 0; i < this.graph.getN(); i++)
         {
             // Extract vertice coordinates
-            int x = getGraph().getVertices().get(i).getX();
-            int y = getGraph().getVertices().get(i).getY();
+            int x = this.graph.getVertices().get(i).getX();
+            int y = this.graph.getVertices().get(i).getY();
             
             // Draw a circle at the extracted coordinates
             g.setColor(Color.gray);
-            if ((i == 0) || (i == getGraph().getN() - 1))
+            if ((i == 0) || (i == this.graph.getN() - 1))
                 g.setColor(Color.pink);
             g.fillOval(x, y, 50, 50);
             g.setColor(Color.black);
@@ -120,7 +126,8 @@ public final class Panel extends JPanel
             
             // Print the name of the vertex at a position that is relative to the vertex coordinates (right in the center of the circle)
             g2d.setColor(Color.white);
-            g2d.drawString(getGraph().getVertices().get(i).getName(), x + 14, y + 32);
+            g2d.drawString(this.graph.getVertices().get(i).getName(), x + 14, y + 32);
+            System.out.println("Vertex" + i + " : " + this.graph.getVertices().get(i));
         }
     }
     

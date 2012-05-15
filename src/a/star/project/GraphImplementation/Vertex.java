@@ -44,13 +44,13 @@ public class Vertex
     @Override
     public String toString()
     {
-        return this.name;
+        return this.name + " " + this.getX() + " " + getY();
     }
     
-    // Shows vertices with their coordinates
+    // Shows vertices without their coordinates
     public String toString2()
     {
-        return this.name + " " + this.getX() + " " + getY();
+        return this.name;
     }
     
     

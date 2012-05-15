@@ -44,13 +44,13 @@ public class Edge
     @Override
     public String toString()
     {
-        return "(" + this.firstVertex.toString() + "," + this.secondVertex.toString() + ") : " + this.weight;
+        return "(" + this.firstVertex.toString2() + "," + this.secondVertex.toString2() + ") : " + this.weight;
     }
     
     // With vertices' coordinates
     public String toString2()
     {
-        return "(" + this.firstVertex.toString2() + "," + this.secondVertex.toString2() + ") : " + this.weight;
+        return "(" + this.firstVertex.toString() + "," + this.secondVertex.toString() + ") : " + this.weight;
     }
     
     
