@@ -124,11 +124,15 @@ public final class Graph
     
     public Vertex AStar(String h)
     {
+        // Clearing minimalPath and terminals contents
+        this.minimalPath = new ArrayList<>();
+        this.terminals = new ArrayList<>();
+        
         // Update the used heuristic
-        if (h.equals("euclidean"))
-        {
+        if (h.toLowerCase().equals("euclidean"))
             this.heuristic = "Euclidean";
-        }
+        else
+            this.heuristic = h;
         Vertex s = this.getSource();
         // The set of tentative nodes to be evaluated
         ArrayList<Vertex> Opened = new ArrayList<>();
@@ -141,7 +145,7 @@ public final class Graph
         // Distance of s is 0 since it's the starting point
         s.setG(0);
         
-        if (h.equals("euclidean"))
+        if (h.toLowerCase().equals("euclidean"))
             s.setF(euclideanHeuristic(s));
         
         // We make s the parent of its own self
@@ -196,7 +200,7 @@ public final class Graph
                         succ.get(j).setG(x.getG() + this.cost(x, succ.get(j)));
 
                         // Carlculate F using the right heuristic
-                        if(h.equals("euclidean"))
+                        if(h.toLowerCase().equals("euclidean"))
                         {
                             succ.get(j).setF(succ.get(j).getG() + euclideanHeuristic(succ.get(j)));
                         }
@@ -215,11 +219,18 @@ public final class Graph
     
     public Vertex AStar(String h, Vertex source, ArrayList<Vertex> terminals)
     {
+        // Clearing minimalPath and terminals contents
+        this.minimalPath = new ArrayList<>();
+        this.terminals = new ArrayList<>();
+        
         // Update the graph attributes
-        if (h.equals("euclidean"))
+        if (this.heuristic != null)
         {
-            this.heuristic = "Euclidean";
+            if (this.heuristic.toLowerCase().equals("euclidean"))
+                this.heuristic = "Euclidean";
         }
+        else
+            this.heuristic = h;
         this.source = source;
         this.terminals = terminals;
         
@@ -235,7 +246,7 @@ public final class Graph
         // Distance of s is 0 since it's the starting point
         s.setG(0);
         
-        if (h.equals("euclidean"))
+        if (h.toLowerCase().equals("euclidean"))
             s.setF(euclideanHeuristic(s));
         
         // We make s the parent of its own self
@@ -290,7 +301,7 @@ public final class Graph
                         succ.get(j).setG(x.getG() + this.cost(x, succ.get(j)));
 
                         // Carlculate F using the right heuristic
-                        if(h.equals("euclidean"))
+                        if(this.heuristic.toLowerCase().equals("euclidean"))
                         {
                             succ.get(j).setF(succ.get(j).getG() + euclideanHeuristic(succ.get(j)));
                         }
@@ -391,7 +402,7 @@ public ArrayList<Vertex> seekNeighbors(Vertex Vertex)
         }
         else
         {
-            System.out.println("The actual vertex dosn't exist, so it does obviously have not any successors.");
+            System.out.println("The actual vertex dosn't exist, so obviously it does not have any successors.");
             succ = null;
             return succ;
         }

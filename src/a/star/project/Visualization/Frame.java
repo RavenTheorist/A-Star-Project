@@ -1,6 +1,9 @@
 package a.star.project.Visualization;
 
+import a.star.project.GraphImplementation.Vertex;
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Scanner;
 import javax.swing.JFrame;
 
 /**
@@ -11,11 +14,13 @@ import javax.swing.JFrame;
 
 public class Frame extends JFrame
 {
+    private Panel panel;
+    
     public Frame()
     {
         // Set frame parameters
         this.setTitle("A Star Visualization");
-        Panel panel = new Panel();
+        this.panel = new Panel();
         this.setSize(panel.getMaxXCoordinate() + 100, panel.getMaxYCoordinate() + 100);
         //this.setBackground(Color.black);
         this.setLocationRelativeTo(null);
@@ -28,6 +33,113 @@ public class Frame extends JFrame
         // Set panel parameters
         this.setContentPane(panel);
         
+        // Set the frame visible
         this.setVisible(true);
+        
+        // Calling Main Loop
+        go();
+    }
+    
+    // Frame Main Loop
+    private void go()
+    {
+        // Inifinite loop
+        while(true)
+        {
+            // Ask for the new source for the pathfinding A* algorithm
+            boolean exist = false;
+            Vertex source = new Vertex();
+            while (!exist)
+            {
+                // Seek for its existence
+                System.out.print("Please select the source vertex : ");
+                Scanner sc = new Scanner(System.in);
+                String readString = sc.nextLine();
+                for (int i = 0 ; i < this.panel.getGraph().getVertices().size() ; i++)
+                {
+                    if (this.panel.getGraph().getVertices().get(i).getName().equals(readString))
+                    {
+                        // Say it exists (exist = true), than save it
+                        exist = true;
+                        source = this.panel.getGraph().getVertices().get(i);
+                    }
+                }
+                // Show error
+                if(!exist)
+                        System.out.println("This vertex doesn't exist !");
+            }
+            
+            // Ask for a correct number that will correspond to the number of terminal vertices
+            boolean correctNumber = false;
+            int numberOfTerminalVertices = 0;
+            while (!correctNumber)
+            {
+                System.out.print("Please write the number of terminal vertices : ");
+                Scanner sc = new Scanner(System.in);
+                int readInteger = sc.nextInt();
+                
+                // If it's a correct number
+                if((readInteger < this.panel.getGraph().getVertices().size()) && (readInteger > 0))
+                {
+                    correctNumber = true;
+                    numberOfTerminalVertices = readInteger;
+                }
+                // Show error
+                else
+                    System.out.println("Incorrect number, please select a number between 1 and " + (this.panel.getGraph().getVertices().size() - 1));
+            }
+            
+            ArrayList<Vertex> terminals = new ArrayList<>();
+            
+            // Ask for each of the terminal vertices needed
+            for (int i = 0 ; i < numberOfTerminalVertices ; i++)
+            {
+                boolean vertexExist = false;
+                while (!vertexExist)
+                {
+                    // Seek for its existence
+                    System.out.print("Please select the terminal vertex number " + (i+1) + " : ");
+                    Scanner sc = new Scanner(System.in);
+                    String readString = sc.nextLine();
+                    for (int j = 0 ; j < this.panel.getGraph().getVertices().size() ; j++)
+                    {
+                        if (this.panel.getGraph().getVertices().get(j).getName().equals(readString))
+                        {
+                            // Say it exists (exist = true), than save it
+                            vertexExist = true;
+                            terminals.add(this.panel.getGraph().getVertices().get(j));
+                        }
+                    }
+                        // Show error
+                    if(!vertexExist)
+                            System.out.println("This vertex doesn't exist !");
+                }
+            }
+            
+            // Ask for the heuristic
+            System.out.print("Please choose a heuristic to use : ");
+            Scanner sc = new Scanner(System.in);
+            String heuristic = sc.nextLine();
+            heuristic = heuristic.toLowerCase();
+            if(!heuristic.equals("euclidean"))
+                System.out.println("Unknown heuristic... continuing without heuristic.");
+            
+            this.panel.setHeuristicPanel(heuristic);
+            this.panel.getGraph().setTerminals(terminals);
+            this.panel.getGraph().setSource(source);
+            this.panel.getGraph().setHeuristic(heuristic);
+            this.panel.getGraph().AStar(heuristic, source, terminals);
+            this.panel.repaint();
+        }
+    }
+
+    public Panel getPanel()
+    {
+        return panel;
+    }
+
+    public void setPanel(Panel panel)
+    {
+        this.panel = panel;
     }
 }

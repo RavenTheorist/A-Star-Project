@@ -25,6 +25,7 @@ public final class Panel extends JPanel implements KeyListener
     // The max X and Y vertices coordinates needs to be passed to the JFrame to make it adapt its size
     private int maxXCoordinate;
     private int maxYCoordinate;
+    private String heuristicPanel;
     
     // The graph that we'll be working with
     private Graph graph = null;
@@ -37,18 +38,25 @@ public final class Panel extends JPanel implements KeyListener
     
     public Panel()
     {
+        heuristicPanel = "eucldean";
         // Add Key Listener to enable moving the graph using the arrow keys
         this.addKeyListener(this);
         
         // Creating graph form text file
         try
         {
-            graph = new Graph("graph2.txt");
+            graph = new Graph("graph1.txt");
         }
         catch (IOException ex)
         {
             Logger.getLogger(Panel.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+        // Specifying terminals and source vertices
+        ArrayList<Vertex> terminals = new ArrayList<>();
+        terminals.add(this.graph.getVertices().get(graph.getVertices().size()-1));
+        // First Call of A*
+        graph.AStar(this.heuristicPanel, graph.getVertices().get(0), terminals);
         
         // Calculating max and min for both X and Y coordinates of all vertices in order to adapt the JFrame's size
         this.maxXCoordinate = graph.getMaxXCoordinate();
@@ -79,7 +87,16 @@ public final class Panel extends JPanel implements KeyListener
     @Override
     public void paintComponent(Graphics g)
     {
-        ArrayList<Edge> minimalPathEdges = new ArrayList<>();
+        ArrayList<Edge> minimalPathEdges;
+        minimalPathEdges = new ArrayList<>();
+        
+        // Panel's defaut parameters initialization
+        g.setColor(Color.LIGHT_GRAY);
+        g.fillRect(0, 0, this.maxXCoordinate + 100, this.maxYCoordinate + 100);
+        Graphics2D g2d = (Graphics2D)g;
+        Font font = new Font("Arial Black", Font.PLAIN, 16);
+        g2d.setFont(font);
+        
         for (int i = 0 ; i < this.getGraph().getMinimalPath().size() - 1 ; i++)
         {
             Vertex firstV = this.graph.getMinimalPath().get(i);
@@ -99,23 +116,13 @@ public final class Panel extends JPanel implements KeyListener
             minimalPathEdges.add(currentEdge);
         }
         
-        // Panel's defaut parameters initialization
-        g.setColor(Color.LIGHT_GRAY);
-        g.fillRect(0, 0, this.maxXCoordinate + 100, this.maxYCoordinate + 100);
-        Graphics2D g2d = (Graphics2D)g;
-        Font font = new Font("Arial Black", Font.PLAIN, 16);
-        g2d.setFont(font);
         
-        // Specifying terminals and source vertices
-        ArrayList<Vertex> terminals = new ArrayList<>();
-        terminals.add(this.graph.getVertices().get(graph.getVertices().size()-1));
         
-        // Calling AStar method with the appropriate parameters
-        graph.AStar("euclidean", graph.getVertices().get(0), terminals);
+        ///***** Calling AStar method with the appropriate parameters *****///
+        graph.AStar(this.graph.getHeuristic(), this.graph.getSource(), this.graph.getTerminals());
+        
         for (int j = 0 ; j < graph.getMinimalPath().size() ; j++)
         {
-            System.out.println(graph.getMinimalPath().get(j));
-        
             // Edges Visualization
             for (int i = 0; i < this.graph.getM(); i++)
             {
@@ -208,7 +215,7 @@ public final class Panel extends JPanel implements KeyListener
         g2d.setFont(font);
         
         String heuristicUsed = "Heuristic Used : ";
-        if (this.graph.getHeuristic() != null)
+        if (this.graph.getHeuristic().toLowerCase().equals("euclidean"))
         {
             heuristicUsed += this.graph.getHeuristic() + ".";
         }
@@ -318,5 +325,13 @@ public final class Panel extends JPanel implements KeyListener
     public void setGraph(Graph graph)
     {
         this.graph = graph;
+    }
+
+    public String getHeuristicPanel() {
+        return heuristicPanel;
+    }
+
+    public void setHeuristicPanel(String heuristicPanel) {
+        this.heuristicPanel = heuristicPanel;
     }
 }
