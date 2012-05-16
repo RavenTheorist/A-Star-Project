@@ -25,6 +25,8 @@ public final class Graph
     private Vertex source;
     // List of the terminal states of the A* minimal path seeking
     private ArrayList<Vertex> terminals;
+    // The used A* minimal pathfinding heuristic attribute
+    private String heuristic;
     
     
     
@@ -122,6 +124,11 @@ public final class Graph
     
     public Vertex AStar(String h)
     {
+        // Update the used heuristic
+        if (h.equals("euclidean"))
+        {
+            this.heuristic = "Euclidean";
+        }
         Vertex s = this.getSource();
         // The set of tentative nodes to be evaluated
         ArrayList<Vertex> Opened = new ArrayList<>();
@@ -164,34 +171,126 @@ public final class Graph
             if(terminalsList.contains(x))
             {
                 Vertex temp = x;
-                // Print the name of the current terminal vertex
-                //System.out.println("Path : " + x.getName() + " ");
+                // Save the current terminal vertex
                 this.minimalPath.add(new Vertex(x));
-                // while the parent vertex is different from the source
+                // While the parent vertex is different from the source
                 while(!(temp.equals(s)))
                 {
-                    // get the parent and print it's name
+                    // Get the parent and save it
                     temp = temp.getParent();
-                    //System.out.println(temp.getName() + " ");
-                    this.minimalPath.add(new Vertex(temp.getParent()));
+                    this.minimalPath.add(new Vertex(temp));
                 }
-                // we'll be able to draw the path with the x
+                // We'll also be able to draw the path with using x
                 return x;
             }
             else
             {
                 // Get neighbors
                 ArrayList<Vertex> succ = this.seekNeighbors(x);
-                // for each neighbor/successor
+                // For each neighbor/successor
                 for (int j = 0; j < succ.size(); j++ )
                 {
                     if(((!(Closed.contains(succ.get(j)))) && (!(Opened.contains(succ.get(j))))) || ((succ.get(j).getG()) > (x.getG() + this.cost(x, succ.get(j)))))
                     {
-                        // get weight of the relating edge (x, succ)
+                        // Get weight of the relating edge (x, succ)
                         succ.get(j).setG(x.getG() + this.cost(x, succ.get(j)));
 
-                        // carlculate F using the right heuristic
-                        if(h.equals("euclideann"))
+                        // Carlculate F using the right heuristic
+                        if(h.equals("euclidean"))
+                        {
+                            succ.get(j).setF(succ.get(j).getG() + euclideanHeuristic(succ.get(j)));
+                        }
+                        
+                         // Set the x as parent of j
+                         succ.get(j).setParent(x);
+                         // Finally adds the neighbor to the opened set of vertices
+                         Opened.add(succ.get(j));
+                    }
+
+                }
+            }
+       }
+       return s;
+}
+    
+    public Vertex AStar(String h, Vertex source, ArrayList<Vertex> terminals)
+    {
+        // Update the graph attributes
+        if (h.equals("euclidean"))
+        {
+            this.heuristic = "Euclidean";
+        }
+        this.source = source;
+        this.terminals = terminals;
+        
+        Vertex s = source;
+        // The set of tentative nodes to be evaluated
+        ArrayList<Vertex> Opened = new ArrayList<>();
+        // Initially containing the start node
+        Opened.add(s);
+        // The set of the already evaluated nodes
+        ArrayList<Vertex> Closed = new ArrayList<>();
+        // Terminals list
+        ArrayList<Vertex> terminalsList = terminals;
+        // Distance of s is 0 since it's the starting point
+        s.setG(0);
+        
+        if (h.equals("euclidean"))
+            s.setF(euclideanHeuristic(s));
+        
+        // We make s the parent of its own self
+        s.setParent(s);
+        
+        // While there is(are) remaining vertices in the Opened set
+        while (!Opened.isEmpty())
+        {
+            int min = Integer.MAX_VALUE;
+            Vertex x = s;
+            
+            // Extract the vertex x with the least f(x)
+            for(int i = 0 ; i < Opened.size() ; i++)
+            {
+                if(Opened.get(i).getF() < min)
+                {
+                    min = Opened.get(i).getF();
+                    x = Opened.get(i);
+                }
+            }
+            
+            // Add it to Closed vertices set
+            Closed.add(x);
+            // Remove it from the Opened vertices set
+            Opened.remove(x);
+            
+            if(terminalsList.contains(x))
+            {
+                Vertex temp = x;
+                // Save the current terminal vertex
+                this.minimalPath.add(new Vertex(x));
+                // While the parent vertex is different from the source
+                while(!(temp.equals(s)))
+                {
+                    // Get the parent and save it
+                    temp = temp.getParent();
+                    this.minimalPath.add(new Vertex(temp));
+                }
+                // We'll also be able to draw the path with using x
+                return x;
+            }
+            else
+            {
+                // Get neighbors
+                ArrayList<Vertex> succ = this.seekNeighbors(x);
+                // For each neighbor/successor
+                for (int j = 0; j < succ.size(); j++ )
+                {
+                    if(((!(Closed.contains(succ.get(j)))) && (!(Opened.contains(succ.get(j))))) || ((succ.get(j).getG()) > (x.getG() + this.cost(x, succ.get(j)))))
+                    {
+                        // Get weight of the relating edge (x, succ)
+                        succ.get(j).setG(x.getG() + this.cost(x, succ.get(j)));
+
+                        // Carlculate F using the right heuristic
+                        if(h.equals("euclidean"))
                         {
                             succ.get(j).setF(succ.get(j).getG() + euclideanHeuristic(succ.get(j)));
                         }
@@ -636,5 +735,13 @@ public ArrayList<Vertex> seekNeighbors(Vertex Vertex)
     public void setTerminals(ArrayList<Vertex> terminals)
     {
         this.terminals = terminals;
+    }
+
+    public String getHeuristic() {
+        return heuristic;
+    }
+
+    public void setHeuristic(String heuristic) {
+        this.heuristic = heuristic;
     }
 }

@@ -1,6 +1,8 @@
 package a.star.project.Visualization;
 
+import a.star.project.GraphImplementation.Edge;
 import a.star.project.GraphImplementation.Graph;
+import a.star.project.GraphImplementation.Vertex;
 import java.awt.Color;
 import java.awt.Font;
 import javax.swing.JPanel;
@@ -9,6 +11,7 @@ import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -40,13 +43,7 @@ public final class Panel extends JPanel implements KeyListener
         // Creating graph form text file
         try
         {
-            String[] terminals = {"t"};
-            graph = new Graph("graph1.txt", "s", terminals);
-            for (int i = 0 ; i < graph.getMinimalPath().size() ; i++)
-            {
-                System.out.println(graph.getMinimalPath().get(i));
-                
-            }
+            graph = new Graph("graph2.txt");
         }
         catch (IOException ex)
         {
@@ -82,6 +79,26 @@ public final class Panel extends JPanel implements KeyListener
     @Override
     public void paintComponent(Graphics g)
     {
+        ArrayList<Edge> minimalPathEdges = new ArrayList<>();
+        for (int i = 0 ; i < this.getGraph().getMinimalPath().size() - 1 ; i++)
+        {
+            Vertex firstV = this.graph.getMinimalPath().get(i);
+            Vertex secondV = this.graph.getMinimalPath().get(i+1);
+            Edge currentEdge = new Edge();
+            for (int j = 0 ; j < this.getGraph().getEdges().size() ; j++)
+            {
+                if ((this.graph.getEdges().get(j).getFirstVertex().getName().equals(firstV.getName())) && (this.graph.getEdges().get(j).getSecondVertex().getName().equals(secondV.getName())))
+                {
+                    currentEdge = new Edge(firstV, secondV, this.graph.getEdges().get(j).getWeight());
+                }
+                if ((this.graph.getEdges().get(j).getFirstVertex().getName().equals(secondV.getName())) && (this.graph.getEdges().get(j).getSecondVertex().getName().equals(firstV.getName())))
+                {
+                    currentEdge = new Edge(firstV, secondV, this.graph.getEdges().get(j).getWeight());
+                }
+            }
+            minimalPathEdges.add(currentEdge);
+        }
+        
         // Panel's defaut parameters initialization
         g.setColor(Color.LIGHT_GRAY);
         g.fillRect(0, 0, this.maxXCoordinate + 100, this.maxYCoordinate + 100);
@@ -89,39 +106,66 @@ public final class Panel extends JPanel implements KeyListener
         Font font = new Font("Arial Black", Font.PLAIN, 16);
         g2d.setFont(font);
         
+        // Specifying terminals and source vertices
+        ArrayList<Vertex> terminals = new ArrayList<>();
+        terminals.add(this.graph.getVertices().get(graph.getVertices().size()-1));
         
-        
-        // Edges Visualization
-        for (int i = 0; i < this.graph.getM(); i++)
+        // Calling AStar method with the appropriate parameters
+        graph.AStar("euclidean", graph.getVertices().get(0), terminals);
+        for (int j = 0 ; j < graph.getMinimalPath().size() ; j++)
         {
-            // Extract the coordinates of both of the vertices that composes the edge
-            int firstVertex_X = this.graph.getEdges().get(i).getFirstVertex().getX();
-            int firstVertex_Y = this.graph.getEdges().get(i).getFirstVertex().getY();
-            int secondVertex_X = this.graph.getEdges().get(i).getSecondVertex().getX();
-            int secondVertex_Y = this.graph.getEdges().get(i).getSecondVertex().getY();
+            System.out.println(graph.getMinimalPath().get(j));
+        
+            // Edges Visualization
+            for (int i = 0; i < this.graph.getM(); i++)
+            {
+                // Extract the coordinates of both of the vertices that composes the edge
+                int firstVertex_X = this.graph.getEdges().get(i).getFirstVertex().getX();
+                int firstVertex_Y = this.graph.getEdges().get(i).getFirstVertex().getY();
+                int secondVertex_X = this.graph.getEdges().get(i).getSecondVertex().getX();
+                int secondVertex_Y = this.graph.getEdges().get(i).getSecondVertex().getY();
             
+                
             
+                // Draw a line between the two vertices
+                g.setColor(Color.blue);
+                g.drawLine(firstVertex_X + 25, firstVertex_Y + 25, secondVertex_X + 25, secondVertex_Y + 25);
+                
+                // If the edge is part of the minimal path
+                boolean isPartOfMinimalPathEdges = false;
+                for (int k = 0; k < minimalPathEdges.size(); k++)
+                {
+                    if ((this.graph.getEdges().get(i).getFirstVertex().getName().equals(minimalPathEdges.get(k).getFirstVertex().getName())) && (this.graph.getEdges().get(i).getSecondVertex().getName().equals(minimalPathEdges.get(k).getSecondVertex().getName())))
+                        isPartOfMinimalPathEdges = true;
+                    if ((this.graph.getEdges().get(i).getFirstVertex().getName().equals(minimalPathEdges.get(k).getSecondVertex().getName())) && (this.graph.getEdges().get(i).getSecondVertex().getName().equals(minimalPathEdges.get(k).getFirstVertex().getName())))
+                        isPartOfMinimalPathEdges = true;
+                }
+                
+                // If the edge is part of the minimal path
+                if (isPartOfMinimalPathEdges)
+                {
+                    // Draw a colored line between the two vertices
+                    g.setColor(Color.red);
+                    g.drawLine(firstVertex_X + 25, firstVertex_Y + 25, secondVertex_X + 25, secondVertex_Y + 25);
+                }
             
-            // Draw a line between the two vertices
-            g.setColor(Color.blue);
-            g.drawLine(firstVertex_X + 25, firstVertex_Y + 25, secondVertex_X + 25, secondVertex_Y + 25);
+                // Calculate the middle of the edge
+                int middleX = (firstVertex_X + secondVertex_X) / 2;
+                int middleY = (firstVertex_Y + secondVertex_Y) / 2;
             
-            // Calculate the middle of the edge
-            int middleX = (firstVertex_X + secondVertex_X) / 2;
-            int middleY = (firstVertex_Y + secondVertex_Y) / 2;
+                // Draw a rectangle at the middle of each edge
+                g.setColor(Color.white);
+                g.fillRect(middleX + 16, middleY + 16, 17, 17);
+                g2d.setColor(Color.getHSBColor(163, 73, 164));
+                g.setColor(Color.red);
+                g.drawRect(middleX + 16, middleY + 16, 17, 17);
             
-            // Draw a rectangle at the middle of each edge
-            g.setColor(Color.white);
-            g.fillRect(middleX + 16, middleY + 16, 17, 17);
-            g2d.setColor(Color.getHSBColor(163, 73, 164));
-            g.setColor(Color.red);
-            g.drawRect(middleX + 16, middleY + 16, 17, 17);
-            
-            // Print the weight of the edge right in the center of the previously created rectangle
-            g2d.setColor(Color.getHSBColor(163, 73, 164));
-            font = new Font("Arial Black", Font.ITALIC, 16);
-            g2d.setFont(font);
-            g2d.drawString(String.valueOf(this.graph.getEdges().get(i).getWeight()), middleX + 19, middleY + 31);
+                // Print the weight of the edge right in the center of the previously created rectangle
+                g2d.setColor(Color.getHSBColor(163, 73, 164));
+                font = new Font("Arial Black", Font.ITALIC, 16);
+                g2d.setFont(font);
+                g2d.drawString(String.valueOf(this.graph.getEdges().get(i).getWeight()), middleX + 19, middleY + 31);
+            }
         }
         
         font = new Font("Arial Black", Font.PLAIN, 16);
@@ -142,11 +186,39 @@ public final class Panel extends JPanel implements KeyListener
             // ...with some circle decorations
             g.setColor(Color.blue);
             g.drawOval(x, y, 50, 50);
+            // If the vertex is part of the minimal path
+            for (int j = 0 ; j < this.graph.getMinimalPath().size() ; j++)
+            {
+                if (this.graph.getMinimalPath().get(j).getName().equals(this.graph.getVertices().get(i).getName()))
+                {
+                    g.setColor(Color.red);
+                    g.drawOval(x, y, 50, 50);
+                }
+            }
             
             // Print the name of the vertex at a position that is relative to the vertex coordinates (right in the center of the circle)
             g2d.setColor(Color.white);
             g2d.drawString(this.graph.getVertices().get(i).getName(), x + 14, y + 32);
         }
+        
+        // Print the used heuristic
+        
+        g2d.setColor(Color.black);
+        font = new Font("Arial", Font.BOLD, 16);
+        g2d.setFont(font);
+        
+        String heuristicUsed = "Heuristic Used : ";
+        if (this.graph.getHeuristic() != null)
+        {
+            heuristicUsed += this.graph.getHeuristic() + ".";
+        }
+        else
+        {
+            heuristicUsed += "None.";
+        }
+        g2d.drawString(heuristicUsed, 5, 16);
+            
+        
     }
     
     
