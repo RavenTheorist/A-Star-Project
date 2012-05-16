@@ -80,6 +80,7 @@ public final class Graph
         this.n = (cols * lines);
         // Updating the number of edges
         this.m = (((cols-1) * lines) + ((lines-1) * cols));
+        System.out.println("Calculated : " + (((cols-1) * lines) + ((lines-1) * cols)));
         
         // Constructing the chessboard
         // Start construction by vertices
@@ -99,7 +100,7 @@ public final class Graph
             Vertex v1 = this.vertices.get(i);
             Vertex v2 = this.vertices.get(i+1);
             
-            if (!(((i+1) % lines) == 0))
+            if (!(((i+1) % cols) == 0))
             {
                 this.edges.add(new Edge(v1, v2, 1));
                 compteur++;
@@ -123,6 +124,7 @@ public final class Graph
         }
         
         System.out.println("Compteur : " + compteur);
+        
     }
     
     public Graph(ArrayList<Vertex> vertices, ArrayList<Edge> edges)
