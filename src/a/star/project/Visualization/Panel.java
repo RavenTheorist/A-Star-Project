@@ -30,6 +30,8 @@ public final class Panel extends JPanel implements KeyListener
     // The graph that we'll be working with
     private Graph graph = null;
     
+    // Internat attribute
+    boolean first = true;
     
     
     /*
@@ -38,7 +40,7 @@ public final class Panel extends JPanel implements KeyListener
     
     public Panel()
     {
-        heuristicPanel = "eucldean";
+        heuristicPanel = "";
         // Add Key Listener to enable moving the graph using the arrow keys
         this.addKeyListener(this);
         
@@ -55,6 +57,10 @@ public final class Panel extends JPanel implements KeyListener
         // Specifying terminals and source vertices
         ArrayList<Vertex> terminals = new ArrayList<>();
         terminals.add(this.graph.getVertices().get(graph.getVertices().size()-1));
+        this.graph.setHeuristic(heuristicPanel);
+        this.graph.setSource(graph.getVertices().get(0));
+        
+        this.graph.setTerminals(terminals);
         // First Call of A*
         graph.AStar(this.heuristicPanel, graph.getVertices().get(0), terminals);
         
@@ -78,6 +84,7 @@ public final class Panel extends JPanel implements KeyListener
             // Bring all the graph vertices closer at the y axis
             graph = Graph.bringVerticesCloserBy_Y(graph, minYCoordinate - 50);
         }
+        first = false;
     }
     
     /*
@@ -119,10 +126,10 @@ public final class Panel extends JPanel implements KeyListener
         
         
         ///***** Calling AStar method with the appropriate parameters *****///
-        graph.AStar(this.graph.getHeuristic(), this.graph.getSource(), this.graph.getTerminals());
+        if (first)
+            graph.AStar(this.heuristicPanel, this.graph.getSource(), this.graph.getTerminals());
         
-        for (int j = 0 ; j < graph.getMinimalPath().size() ; j++)
-        {
+       
             // Edges Visualization
             for (int i = 0; i < this.graph.getM(); i++)
             {
@@ -173,7 +180,7 @@ public final class Panel extends JPanel implements KeyListener
                 g2d.setFont(font);
                 g2d.drawString(String.valueOf(this.graph.getEdges().get(i).getWeight()), middleX + 19, middleY + 31);
             }
-        }
+        
         
         font = new Font("Arial Black", Font.PLAIN, 16);
         g2d.setFont(font);
@@ -215,9 +222,9 @@ public final class Panel extends JPanel implements KeyListener
         g2d.setFont(font);
         
         String heuristicUsed = "Heuristic Used : ";
-        if (this.graph.getHeuristic().toLowerCase().equals("euclidean"))
+        if (this.getHeuristicPanel().equals("euclidean"))
         {
-            heuristicUsed += this.graph.getHeuristic() + ".";
+            heuristicUsed += this.getHeuristicPanel() + ".";
         }
         else
         {

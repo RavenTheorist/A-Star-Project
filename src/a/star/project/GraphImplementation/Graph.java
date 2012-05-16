@@ -224,10 +224,10 @@ public final class Graph
         this.terminals = new ArrayList<>();
         
         // Update the graph attributes
-        if (this.heuristic != null)
+        if (h != null)
         {
-            if (this.heuristic.toLowerCase().equals("euclidean"))
-                this.heuristic = "Euclidean";
+            if (h.equals("euclidean"))
+                this.heuristic = "euclidean";
         }
         else
             this.heuristic = h;

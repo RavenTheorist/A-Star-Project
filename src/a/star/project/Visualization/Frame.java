@@ -129,7 +129,8 @@ public class Frame extends JFrame
             this.panel.getGraph().setSource(source);
             this.panel.getGraph().setHeuristic(heuristic);
             this.panel.getGraph().AStar(heuristic, source, terminals);
-            this.panel.repaint();
+            
+            repaint();
         }
     }
 
