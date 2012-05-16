@@ -40,7 +40,13 @@ public final class Panel extends JPanel implements KeyListener
         // Creating graph form text file
         try
         {
-            graph = new Graph("graph1.txt");
+            String[] terminals = {"t"};
+            graph = new Graph("graph1.txt", "s", terminals);
+            for (int i = 0 ; i < graph.getMinimalPath().size() ; i++)
+            {
+                System.out.println(graph.getMinimalPath().get(i));
+                
+            }
         }
         catch (IOException ex)
         {
@@ -163,7 +169,7 @@ public final class Panel extends JPanel implements KeyListener
         {
             for (int i = 0 ; i < this.graph.getN() ; i++)
             {
-                this.graph.getVertices().get(i).setY(this.graph.getVertices().get(i).getY() - 2);
+                this.graph.getVertices().get(i).setY(this.graph.getVertices().get(i).getY() - 5);
             }
             this.repaint();
         }
@@ -173,7 +179,7 @@ public final class Panel extends JPanel implements KeyListener
         {
             for (int i = 0 ; i < this.graph.getN() ; i++)
             {
-                this.graph.getVertices().get(i).setY(this.graph.getVertices().get(i).getY() + 2);
+                this.graph.getVertices().get(i).setY(this.graph.getVertices().get(i).getY() + 5);
             }
             this.repaint();
         }
@@ -183,7 +189,7 @@ public final class Panel extends JPanel implements KeyListener
         {
             for (int i = 0 ; i < this.graph.getN() ; i++)
             {
-                this.graph.getVertices().get(i).setX(this.graph.getVertices().get(i).getX() - 2);
+                this.graph.getVertices().get(i).setX(this.graph.getVertices().get(i).getX() - 5);
             }
             this.repaint();
         }
@@ -193,7 +199,7 @@ public final class Panel extends JPanel implements KeyListener
         {
             for (int i = 0 ; i < this.graph.getN() ; i++)
             {
-                this.graph.getVertices().get(i).setX(this.graph.getVertices().get(i).getX() + 2);
+                this.graph.getVertices().get(i).setX(this.graph.getVertices().get(i).getX() + 5);
             }
             this.repaint();
         }

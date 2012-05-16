@@ -41,10 +41,7 @@ public class Vertex
         this.x = 0;
         this.y = 0;
         this.neighbors = null;
-        
-        this.g = (int) Double.POSITIVE_INFINITY;
-        this.h = (int) Double.POSITIVE_INFINITY;
-        this.f = (int) Double.POSITIVE_INFINITY;
+        this.parent = null;
     }
     
     public Vertex(String name, int x, int y)
@@ -53,10 +50,7 @@ public class Vertex
         this.x = x;
         this.y = y;
         this.neighbors = null;
-        
-        this.g = (int) Double.POSITIVE_INFINITY;
-        this.h = (int) Double.POSITIVE_INFINITY;
-        this.f = (int) Double.POSITIVE_INFINITY;
+        this.parent = null;
     }
     
     public Vertex(String name, int x, int y, ArrayList<Vertex> neighbors)
@@ -65,10 +59,7 @@ public class Vertex
         this.x = x;
         this.y = y;
         this.neighbors = neighbors;
-        
-        this.g = (int) Double.POSITIVE_INFINITY;
-        this.h = (int) Double.POSITIVE_INFINITY;
-        this.f = (int) Double.POSITIVE_INFINITY;
+        this.parent = null;
     }
     
     public Vertex(Vertex vertex)
@@ -77,10 +68,7 @@ public class Vertex
         this.x = vertex.getX();
         this.y = vertex.getY();
         this.neighbors = vertex.getNeighbors();
-        
-        this.g = (int) Double.POSITIVE_INFINITY;
-        this.h = (int) Double.POSITIVE_INFINITY;
-        this.f = (int) Double.POSITIVE_INFINITY;
+        this.parent = null;
     }
     
     

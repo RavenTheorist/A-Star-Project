@@ -21,6 +21,10 @@ public final class Graph
     private int m;
     // Minimal Path (A*)
     private ArrayList<Vertex> minimalPath;
+    // Source vertex of the A* minimal path seeking
+    private Vertex source;
+    // List of the terminal states of the A* minimal path seeking
+    private ArrayList<Vertex> terminals;
     
     
     
@@ -34,6 +38,7 @@ public final class Graph
         this.edges = edges;
         this.n = vertices.size();
         this.m = edges.size();
+        this.minimalPath = new ArrayList<>();
     }
     
     public Graph(String fileName) throws IOException
@@ -45,18 +50,60 @@ public final class Graph
         this.edges = tempGraph.getEdges();
         this.n = tempGraph.getN();
         this.m = tempGraph.getM();
-        this.minimalPath = AStar(this.vertices.get(0), this.getVertices().get(this.getVertices().size()-1));
-        
-        System.out.println("Minimal Path :");
-        
-        for (int i = 0 ; i < this.minimalPath.size() ; i++)
-        {
-                System.out.println(this.minimalPath.get(i).getName());
-                
-        }
-            
+        this.minimalPath = new ArrayList<>();
     }
     
+    public Graph(String fileName, String sourceName, String[] terminals) throws IOException
+    {
+        // Extract the graph from the file
+        Graph tempGraph = fileToGraph(fileName);
+        
+        this.vertices = tempGraph.getVertices();
+        this.edges = tempGraph.getEdges();
+        this.n = tempGraph.getN();
+        this.m = tempGraph.getM();
+        this.terminals = new ArrayList<>();
+        this.minimalPath = new ArrayList<>();
+        
+        // Verify the existense of the source vertex
+        for (int i = 0; i < this.vertices.size(); i++)
+        {
+            if(this.vertices.get(i).getName().equals(sourceName))
+                this.source = this.vertices.get(i);
+        }
+        
+        // If the source vertex exists
+        if (this.source != null)
+        {
+            // Verify the existence of each terminal vertex
+            for(int i = 0 ; i < terminals.length ; i++)
+            {
+                boolean terminalExists = false;
+                for (int j = 0 ; j < this.vertices.size() ; j++)
+                {
+                    // If the current analyzed terminal vertex exists
+                    if(this.vertices.get(j).getName().equals(terminals[i]))
+                    {
+                        // Take it from the vertices of the graph
+                        this.terminals.add(this.vertices.get(j));
+                        // Say it exists
+                        terminalExists = true;
+                    }
+                }
+                // Show error if the current terminal vertex doesn't exist
+                if (!terminalExists)
+                        System.err.println("Graph Constructor : \"One of the terminal vertices doesn't exist !\"");
+            }
+            
+            // Everything's ok, we are now ready to lauch the A* Algorithm
+            Vertex result = AStar("euclidean");
+        }
+        else
+            System.err.println("Graph Constructor : \"The source vertex doesn't exist !\"");
+        
+        //this.minimalPath = AStar(this.vertices.get(0), this.getVertices().get(this.getVertices().size()-1));
+        
+    }
     
     public Graph(Graph graph)
     {
@@ -64,6 +111,7 @@ public final class Graph
         this.edges = graph.getEdges();
         this.n = graph.getN();
         this.m = graph.getM();
+        this.minimalPath = new ArrayList<>();
     }
     
     
@@ -72,97 +120,201 @@ public final class Graph
      * A* Methods
      */
     
-    public ArrayList<Vertex> AStar(Vertex source, Vertex target)
+    public Vertex AStar(String h)
     {
-        // Objects Initialization
-        Vertex s = source;
-        Vertex t = target;
-        ArrayList<Vertex> Open;
-        ArrayList<Vertex> Close;
-        
-        // Initialization
-        Open = new ArrayList<>();
-        Close = new ArrayList<>();
-        Open.add(new Vertex(s));
+        Vertex s = this.getSource();
+        // The set of tentative nodes to be evaluated
+        ArrayList<Vertex> Opened = new ArrayList<>();
+        // Initially containing the start node
+        Opened.add(s);
+        // The set of the already evaluated nodes
+        ArrayList<Vertex> Closed = new ArrayList<>();
+        // Terminals list
+        ArrayList<Vertex> terminalsList = this.getTerminals();
+        // Distance of s is 0 since it's the starting point
         s.setG(0);
-        s.setF(s.getH());
-        System.out.println("g(s) : " + s.getF());
         
-        while (!Open.isEmpty())
+        if (h.equals("euclidean"))
+            s.setF(euclideanHeuristic(s));
+        
+        // We make s the parent of its own self
+        s.setParent(s);
+        
+        // While there is(are) remaining vertices in the Opened set
+        while (!Opened.isEmpty())
         {
-            System.out.println("\nOpen : ");
-            for (int i = 0 ; i < Open.size() ; i++)
-            {
-                System.out.println(Open.get(i).getName() + ",");
-            }
-            System.out.println("\nClose : ");
-            for (int i = 0 ; i < Close.size() ; i++)
-            {
-                System.out.print(Close.get(i).getName() + ",");
-            }
-            System.out.println("\n");
+            int min = Integer.MAX_VALUE;
+            Vertex x = s;
             
-            // Extract x the vertex with the minimal f
-            int minimalF = Open.get(0).getG();
-            Vertex x = Open.get(0);
-            for (int i = 1 ; i < Open.size() ; i++)
+            // Extract the vertex x with the least f(x)
+            for(int i = 0 ; i < Opened.size() ; i++)
             {
-                if (minimalF > Open.get(i).getG())
+                if(Opened.get(i).getF() < min)
                 {
-                    minimalF = Open.get(i).getG();
-                    x = Open.get(i);
+                    min = Opened.get(i).getF();
+                    x = Opened.get(i);
                 }
             }
             
-            for (int i = 1 ; i < Open.size() ; i++)
+            // Add it to Closed vertices set
+            Closed.add(x);
+            // Remove it from the Opened vertices set
+            Opened.remove(x);
+            
+            if(terminalsList.contains(x))
             {
-                if (Open.get(i).getName().equals(x.getName()))
-                    Open.remove(i);
-            }
-            
-            //System.out.println("minimalV : " + x);
-            
-            Close.add(new Vertex(x));
-            
-            if (x.getName().equals(target.getName()))
-            {
-                return Close;
+                Vertex temp = x;
+                // Print the name of the current terminal vertex
+                //System.out.println("Path : " + x.getName() + " ");
+                this.minimalPath.add(new Vertex(x));
+                // while the parent vertex is different from the source
+                while(!(temp.equals(s)))
+                {
+                    // get the parent and print it's name
+                    temp = temp.getParent();
+                    //System.out.println(temp.getName() + " ");
+                    this.minimalPath.add(new Vertex(temp.getParent()));
+                }
+                // we'll be able to draw the path with the x
+                return x;
             }
             else
             {
-                for (Vertex y : x.getNeighbors())
+                // Get neighbors
+                ArrayList<Vertex> succ = this.seekNeighbors(x);
+                // for each neighbor/successor
+                for (int j = 0; j < succ.size(); j++ )
                 {
-                    boolean containsY = false;
-                    for (int i = 0 ; i < Open.size() ; i++)
+                    if(((!(Closed.contains(succ.get(j)))) && (!(Opened.contains(succ.get(j))))) || ((succ.get(j).getG()) > (x.getG() + this.cost(x, succ.get(j)))))
                     {
-                        if (Open.get(i).getName().equals(y.getName()))
-                            containsY = true;
+                        // get weight of the relating edge (x, succ)
+                        succ.get(j).setG(x.getG() + this.cost(x, succ.get(j)));
+
+                        // carlculate F using the right heuristic
+                        if(h.equals("euclideann"))
+                        {
+                            succ.get(j).setF(succ.get(j).getG() + euclideanHeuristic(succ.get(j)));
+                        }
+                        
+                         // Set the x as parent of j
+                         succ.get(j).setParent(x);
+                         // Finally adds the neighbor to the opened set of vertices
+                         Opened.add(succ.get(j));
                     }
-                    for (int i = 0 ; i < Close.size() ; i++)
-                    {
-                        if (Close.get(i).getName().equals(y.getName()))
-                            containsY = true;
-                    }
-                    
-                    int costXY = 0;
-                    for (int i = 0 ; i < this.getEdges().size() ; i++)
-                    {
-                        if (((this.getEdges().get(i).getFirstVertex().getName().equals(x.getName())) && (this.getEdges().get(i).getSecondVertex().getName().equals(y.getName()))) || ((this.getEdges().get(i).getFirstVertex().getName().equals(y.getName())) && (this.getEdges().get(i).getSecondVertex().getName().equals(x.getName()))))
-                            costXY = this.getEdges().get(i).getWeight();
-                        //System.out.println("COST : " + costXY);
-                    }
-                    if ((!containsY) || (y.getG() > (x.getG() + costXY)))
-                    {
-                        y.setG(x.getG() + costXY);
-                        y.setF(y.getG());
-                        y.setParent(new Vertex(x));
-                        Open.add(y);
-                    }
+
+                }
+            }
+       }
+       return s;
+}
+    
+    // This method look for an edge that relates x and y then return its weight
+    public int cost(Vertex x, Vertex y)
+    {
+        Edge a = new Edge(x,y, -1);
+
+        if(this.verifyEdgeExistence(a))
+        {
+            // Sweep all the edges from the edges list of the graph
+            for (int i = 0;i< this.edges.size();i++)
+            {
+                if((this.edges.get(i).getFirstVertex() == a.getFirstVertex())&&(this.edges.get(i).getSecondVertex() == a.getSecondVertex()))
+                {
+                    return  this.edges.get(i).getWeight();
+                }
+
+                if((this.edges.get(i).getSecondVertex() == a.getFirstVertex())&&(this.edges.get(i).getFirstVertex() == a.getSecondVertex()))
+                {
+                    return this.edges.get(i).getWeight();
                 }
             }
         }
-        
-        return null;
+        else
+        {
+            System.out.println("These two vertices aren't related by an edge.");
+            return -1;
+        }
+        return -1;
+    }
+    
+    // This method verifies the existency of an edge among the edges list of the graph
+    public boolean verifyEdgeExistence(Edge edge)
+    {
+        for (int i = 0;i< edges.size();i++)
+        {
+            if((this.edges.get(i).getFirstVertex() == edge.getFirstVertex())&&(this.edges.get(i).getSecondVertex() == edge.getSecondVertex()))
+            {
+                return true;
+            }
+
+            if((this.edges.get(i).getSecondVertex() == edge.getFirstVertex())&&(this.edges.get(i).getFirstVertex() == edge.getSecondVertex()))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+public ArrayList<Vertex> seekNeighbors(Vertex Vertex)
+    {
+        ArrayList<Vertex> succ = new ArrayList<>();
+        if(this.vertices.contains(Vertex))
+        {
+            if(Vertex.getParent() != null)
+            {
+                for(int i = 0;i<this.edges.size();i++)
+                {
+                    if(this.edges.get(i).getFirstVertex() == Vertex)
+                    {
+                        if(this.edges.get(i).getSecondVertex() != Vertex.getParent())
+                        {
+                            succ.add(this.edges.get(i).getSecondVertex());
+                        }
+                    }
+
+                    if(this.edges.get(i).getSecondVertex() == Vertex)
+                    {
+                        if(this.edges.get(i).getFirstVertex() != Vertex.getParent())
+                        {
+                            succ.add(this.edges.get(i).getFirstVertex());
+                        }
+                    }
+
+                }
+                return succ;
+            }
+            else
+            {
+                System.out.println("The actual vertex doesn't have any parent, no parents no successors");
+                succ = null;
+                return succ;
+            }
+        }
+        else
+        {
+            System.out.println("The actual vertex dosn't exist, so it does obviously have not any successors.");
+            succ = null;
+            return succ;
+        }
+    }
+
+    // This is my first tested heuristic
+    public int euclideanHeuristic(Vertex x)
+    {
+        int min = Integer.MAX_VALUE;
+        int distance;
+        //pour tout les Vertexs terminaux
+        for(int i = 0 ; i < this.getTerminals().size() ; i++)
+        {
+         // calculating distance using pythagore
+         distance = (int) Math.sqrt(Math.pow(((this.getTerminals().get(i).getX()) - (x.getX())), 2) + Math.pow(((this.getTerminals().get(i).getY()) - (x.getY())), 2));
+         // if the distance si la distance avec ce Vertex terminal est la plus courte c'est elle qu'on retournera
+         if (distance < min)
+         {
+             min = distance;
+         }
+        }
+        return min;
     }
     
     
@@ -185,7 +337,7 @@ public final class Graph
 			textFile = new BufferedReader(new FileReader(new File(file)));
 			if (textFile == null)
                         {
-				throw new FileNotFoundException("Fichier non trouvé : " + file);
+				throw new FileNotFoundException("File not found : " + file);
 			}
                         
                         // Read first line
@@ -454,5 +606,35 @@ public final class Graph
     public void setM(int m)
     {
         this.m = m;
+    }
+
+    public ArrayList<Vertex> getMinimalPath()
+    {
+        return minimalPath;
+    }
+
+    public void setMinimalPath(ArrayList<Vertex> minimalPath)
+    {
+        this.minimalPath = minimalPath;
+    }
+
+    public Vertex getSource()
+    {
+        return source;
+    }
+
+    public void setSource(Vertex source)
+    {
+        this.source = source;
+    }
+
+    public ArrayList<Vertex> getTerminals()
+    {
+        return terminals;
+    }
+
+    public void setTerminals(ArrayList<Vertex> terminals)
+    {
+        this.terminals = terminals;
     }
 }

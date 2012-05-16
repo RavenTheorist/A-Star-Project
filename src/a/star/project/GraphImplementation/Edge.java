@@ -31,7 +31,7 @@ public class Edge
     {
         this.firstVertex = new Vertex();
         this.secondVertex = new Vertex();
-        this.weight = 0;
+        this.weight = -1;
     }
     
     
