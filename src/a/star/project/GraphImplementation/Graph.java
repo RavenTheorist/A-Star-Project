@@ -2,6 +2,7 @@ package a.star.project.GraphImplementation;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 /**
  * Graph Implementation Class
@@ -33,6 +34,96 @@ public final class Graph
     /*
      * Constructors
      */
+    
+    public Graph()
+    {
+        // Initialization
+        this.vertices = new ArrayList<>();
+        this.edges = new ArrayList<>();
+        
+        // Number of lines
+        int lines = -1;
+        // Number of columns
+        int cols = -1;
+        
+        // Ask for lines number
+        while(lines == -1)
+        {
+            System.out.print("Please write the number of lines : ");
+            Scanner sc = new Scanner(System.in);
+            int temp = sc.nextInt();
+            // There should be an interval as a limit for the number
+            if ((temp >= 1) && (temp <= 100))
+            {
+                lines = temp;
+            }
+            else
+                System.out.println("Incorrect Number of line !");
+        }
+        
+        // Ask for the columns number
+        while(cols == -1)
+        {
+            System.out.print("Please write the number of columns : ");
+            Scanner sc = new Scanner(System.in);
+            int temp = sc.nextInt();
+            // There should be an interval as a limit for the number
+            if ((temp >= 1) && (temp <= 100))
+            {
+                cols = temp;
+            }
+            else
+                System.out.println("Incorrect Number of columns !");
+        }
+        
+        // Updating the number of vertices
+        this.n = (cols * lines);
+        // Updating the number of edges
+        this.m = (((cols-1) * lines) + ((lines-1) * cols));
+        
+        // Constructing the chessboard
+        // Start construction by vertices
+        for (int l = 0 ; l < lines ; l++)
+        {
+            for (int c = 0 ; c < cols ; c++)
+            {
+                this.vertices.add(new Vertex(("l" + l + "c" + c), (c * 100), (l * 100)));
+            }
+        }
+        
+        // Edges construction
+        // Start construction by the lines
+        int compteur = 0;
+        for (int i = 0 ; i < n-1 ; i++)
+        {
+            Vertex v1 = this.vertices.get(i);
+            Vertex v2 = this.vertices.get(i+1);
+            
+            if (!(((i+1) % lines) == 0))
+            {
+                this.edges.add(new Edge(v1, v2, 1));
+                compteur++;
+            }
+        }
+        
+        // Constructing the columns
+        
+        for (int i = 0 ; i < cols ; i++)
+        {
+            for (int j = 1 ; j < lines ; j++)
+            {
+                Vertex v1 = this.vertices.get(i);
+                Vertex v2 = this.vertices.get(j*cols+i);
+                
+
+                    this.edges.add(new Edge(v1, v2, 1));
+                    compteur++;
+
+            }
+        }
+        
+        System.out.println("Compteur : " + compteur);
+    }
     
     public Graph(ArrayList<Vertex> vertices, ArrayList<Edge> edges)
     {

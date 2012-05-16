@@ -14,14 +14,20 @@ import javax.swing.JFrame;
 
 public class Frame extends JFrame
 {
+    // Content panel of the frame
     private Panel panel;
     
-    public Frame()
+    /*
+     * Constructors
+     */
+    
+    public Frame(String graphType)
     {
         // Set frame parameters
         this.setTitle("A Star Visualization");
-        this.panel = new Panel();
+        this.panel = new Panel(graphType);
         this.setSize(panel.getMaxXCoordinate() + 100, panel.getMaxYCoordinate() + 100);
+        this.setAlwaysOnTop(true);
         //this.setBackground(Color.black);
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

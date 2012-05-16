@@ -38,16 +38,19 @@ public final class Panel extends JPanel implements KeyListener
      * Constructors
      */
     
-    public Panel()
+    public Panel(String graphType)
     {
-        heuristicPanel = "";
+        heuristicPanel = "euclidean";
         // Add Key Listener to enable moving the graph using the arrow keys
         this.addKeyListener(this);
         
         // Creating graph form text file
         try
         {
-            graph = new Graph("graph1.txt");
+            if (graphType.equals("normal"))
+                graph = new Graph("graph1.txt");
+            else if(graphType.equals("chessboard"))
+                graph = new Graph();
         }
         catch (IOException ex)
         {
