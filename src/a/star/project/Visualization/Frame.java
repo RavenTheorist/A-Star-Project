@@ -1,7 +1,6 @@
 package a.star.project.Visualization;
 
 import a.star.project.GraphImplementation.Vertex;
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Scanner;
 import javax.swing.JFrame;
@@ -25,11 +24,10 @@ public class Frame extends JFrame
      * Constructors
      */
     
-    public Frame(String graphType)
+    public Frame(String graphType, String heuristic)
     {
         // Set frame parameters
-        this.setTitle("A Star Visualization");
-        this.panel = new Panel(graphType);
+        this.panel = new Panel(graphType, heuristic);
         this.setSize(panel.getMaxXCoordinate() + 100, panel.getMaxYCoordinate() + 100);
         this.setAlwaysOnTop(true);
         //this.setBackground(Color.black);
@@ -42,6 +40,9 @@ public class Frame extends JFrame
         
         // Set panel parameters
         this.setContentPane(panel);
+        
+        // Screen title
+        this.setTitle("A* Visualization on the " + graphType.toUpperCase());
         
         // Set the frame visible
         this.setVisible(true);
@@ -126,19 +127,11 @@ public class Frame extends JFrame
                 }
             }
             
-            // Ask for the heuristic
-            System.out.print("Please choose a heuristic to use : ");
-            Scanner sc = new Scanner(System.in);
-            String heuristic = sc.nextLine();
-            heuristic = heuristic.toLowerCase();
-            if(!heuristic.equals("euclidean"))
-                System.out.println("Unknown heuristic... continuing without heuristic.");
-            
-            this.panel.setHeuristicPanel(heuristic);
+           
             this.panel.getGraph().setTerminals(terminals);
             this.panel.getGraph().setSource(source);
-            this.panel.getGraph().setHeuristic(heuristic);
-            this.panel.getGraph().AStar(heuristic, source, terminals);
+
+            this.panel.getGraph().AStar(this.panel.getHeuristicPanel(), source, terminals);
             
             repaint();
         }

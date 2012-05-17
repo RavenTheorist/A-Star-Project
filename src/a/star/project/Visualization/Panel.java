@@ -11,7 +11,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JPanel;
@@ -38,14 +37,14 @@ public final class Panel extends JPanel implements KeyListener
     // Internat attribute
     boolean first = true;
     
-    
     /*
      * Constructors
      */
     
-    public Panel(String graphType)
+    public Panel(String graphType, String heuristic)
     {
-        heuristicPanel = "euclidean";
+        heuristicPanel = heuristic;
+        this.heuristicPanel = heuristic;
         // Add Key Listener to enable moving the graph using the arrow keys
         this.addKeyListener(this);
         
@@ -57,25 +56,13 @@ public final class Panel extends JPanel implements KeyListener
             // Open the right type of graph occording to the content of the given graphType
             switch (graphType)
             {
-                // Normal graphs type
-                case "normal":
-                    while (readInteger == -1)
-                    {
-                        // Let the the user choose between graph 1 and 2
-                        System.out.print("Please select a graph (write 1 or 2) : ");
-                        Scanner sc = new Scanner(System.in);
-                        readInteger = sc.nextInt();
-                        if (readInteger == 1)
-                            graph = new Graph("graph1.txt");
-                        else if (readInteger == 2)
-                            graph = new Graph("graph2.txt");
-                        else
-                        {
-                            // Print error
-                            System.out.println("Wrong number.");
-                            readInteger = -1;
-                        }
-                    }    
+                // Normal graphs type 1
+                case "graph1":
+                    graph = new Graph("graph1.txt");
+                    break;
+                // Normal graphs type 2
+                case "graph2":
+                    graph = new Graph("graph2.txt");
                     break;
                 // Chessboard type chosen
                 case "chessboard":
@@ -87,24 +74,8 @@ public final class Panel extends JPanel implements KeyListener
                     break;
                 // If anything else given, consider a normal graph
                 default:
-                    System.out.println("Graph type \"" + graphType + "\" is unknown. Considering normal graphs.");
-                    while (readInteger == -1)
-                    {
-                        // Let the the user choose between graph 1 and 2
-                        System.out.print("Please select a graph (write 1 or 2) : ");
-                        Scanner sc = new Scanner(System.in);
-                        readInteger = sc.nextInt();
-                        if (readInteger == 1)
-                            graph = new Graph("graph1.txt");
-                        else if (readInteger == 2)
-                            graph = new Graph("graph2.txt");
-                        else
-                        {
-                            // Print error
-                            System.out.println("Wrong number.");
-                            readInteger = -1;
-                        }
-                    }    
+                    System.out.println("Graph type \"" + graphType + "\" is unknown. Considering normal graph type 1.");
+                    graph = new Graph("graph1.txt");
                     break;
             }
         }
@@ -477,3 +448,32 @@ public final class Panel extends JPanel implements KeyListener
         this.heuristicPanel = heuristicPanel;
     }
 }
+
+
+/* Another implementation of the try block in the Panel constructor
+     * try
+        {
+            // We will use this to verify the integers read from the user
+            int readInteger = -1;
+            // Open the right type of graph occording to the content of the given graphType
+            switch (graphType)
+            {
+                // Normal graphs type 1
+                case "graph1":
+                    graph = new Graph("graph1.txt");
+                    break;
+                // Normal graphs type 2
+                case "graph2":
+                    graph = new Graph("graph2.txt");
+                    break;
+                // Chessboard type chosen
+                case "chessboard":
+                    graph = new Graph();
+                    break;
+                // Maze type chosen
+                case "maze":
+                    graph = new Graph("labyrinthe.txt", 2);
+                    break;
+            }
+        }
+     */
