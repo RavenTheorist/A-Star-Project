@@ -130,6 +130,17 @@ public final class Graph
         this.minimalPath = new ArrayList<>();
     }
     
+    public Graph(ArrayList<Vertex> vertices, ArrayList<Edge> edges, Vertex source, ArrayList<Vertex> terminals)
+    {
+        this.vertices = vertices;
+        this.edges = edges;
+        this.n = vertices.size();
+        this.m = edges.size();
+        this.minimalPath = new ArrayList<>();
+        this.source = source;
+        this.terminals = terminals;
+    }
+    
     public Graph(String fileName) throws IOException
     {
         // Extract the graph from the file
@@ -421,6 +432,7 @@ public final class Graph
     // This method look for an edge that relates x and y then return its weight
     public int cost(Vertex x, Vertex y)
     {
+        // Make an edge (x, y) with the two given vertices x and y
         Edge a = new Edge(x,y, -1);
 
         if(this.verifyEdgeExistence(a))
@@ -441,60 +453,75 @@ public final class Graph
         }
         else
         {
+            // Else, print the error
             System.out.println("These two vertices aren't related by an edge.");
             return -1;
         }
+        // If anything else happens... (is that "wtf" you just said? Don't blame ME ! I know it's not possible -> but it's simply Java and its JRE)
         return -1;
     }
     
     // This method verifies the existency of an edge among the edges list of the graph
     public boolean verifyEdgeExistence(Edge edge)
     {
-        for (int i = 0;i< edges.size();i++)
+        // For each existing edge
+        for (int i = 0 ; i < edges.size() ; i++)
         {
+            // Compare it to the edge (edge.getFirstVertex(), edge.getSecondVertex())
             if((this.edges.get(i).getFirstVertex() == edge.getFirstVertex())&&(this.edges.get(i).getSecondVertex() == edge.getSecondVertex()))
             {
+                // If the same, than return true (it exists)
                 return true;
             }
 
             if((this.edges.get(i).getSecondVertex() == edge.getFirstVertex())&&(this.edges.get(i).getFirstVertex() == edge.getSecondVertex()))
             {
+                // If the same in one way or another, than return true (it exists)
                 return true;
             }
         }
+        // Else return false (doesn't exist)
         return false;
     }
     
-public ArrayList<Vertex> seekNeighbors(Vertex Vertex)
+    // This method, as its name implies, returns a set of all the neighbors of a given vertex
+    public ArrayList<Vertex> seekNeighbors(Vertex vertex)
     {
+        // The set succ will contain all the neighbors of vertex
         ArrayList<Vertex> succ = new ArrayList<>();
-        if(this.vertices.contains(Vertex))
+        if(this.vertices.contains(vertex))
         {
-            if(Vertex.getParent() != null)
+            if(vertex.getParent() != null)
             {
-                for(int i = 0;i<this.edges.size();i++)
+                // We seek for the neighbors by sweeping the edges
+                for(int i = 0 ; i < this.edges.size() ; i++)
                 {
-                    if(this.edges.get(i).getFirstVertex() == Vertex)
+                    // If there is an edge that contains the two vertices
+                    if(this.edges.get(i).getFirstVertex() == vertex)
                     {
-                        if(this.edges.get(i).getSecondVertex() != Vertex.getParent())
+                        if(this.edges.get(i).getSecondVertex() != vertex.getParent())
                         {
+                            // If exists, add it to the set
                             succ.add(this.edges.get(i).getSecondVertex());
                         }
                     }
 
-                    if(this.edges.get(i).getSecondVertex() == Vertex)
+                    if(this.edges.get(i).getSecondVertex() == vertex)
                     {
-                        if(this.edges.get(i).getFirstVertex() != Vertex.getParent())
+                        if(this.edges.get(i).getFirstVertex() != vertex.getParent())
                         {
+                            // If exists, add it to the set
                             succ.add(this.edges.get(i).getFirstVertex());
                         }
                     }
 
                 }
+                // Return the set
                 return succ;
             }
             else
             {
+                // Print the error
                 System.out.println("The actual vertex doesn't have any parent, no parents no successors");
                 succ = null;
                 return succ;
@@ -502,6 +529,7 @@ public ArrayList<Vertex> seekNeighbors(Vertex Vertex)
         }
         else
         {
+            // Print the error
             System.out.println("The actual vertex dosn't exist, so obviously it does not have any successors.");
             succ = null;
             return succ;
@@ -513,12 +541,12 @@ public ArrayList<Vertex> seekNeighbors(Vertex Vertex)
     {
         int min = Integer.MAX_VALUE;
         int distance;
-        //pour tout les Vertexs terminaux
+        // For each terminal vertex
         for(int i = 0 ; i < this.getTerminals().size() ; i++)
         {
-         // calculating distance using pythagore
+         // Calculating distance using pythagore
          distance = (int) Math.sqrt(Math.pow(((this.getTerminals().get(i).getX()) - (x.getX())), 2) + Math.pow(((this.getTerminals().get(i).getY()) - (x.getY())), 2));
-         // if the distance si la distance avec ce Vertex terminal est la plus courte c'est elle qu'on retournera
+         // If the distance si la distance avec ce Vertex terminal est la plus courte c'est elle qu'on retournera
          if (distance < min)
          {
              min = distance;
@@ -736,11 +764,14 @@ public ArrayList<Vertex> seekNeighbors(Vertex Vertex)
                                         Vertex v2 = new Vertex();
                                         for (int k = 0; k < vertices.size(); k++)
                                         {
+                                            // Construct the first vertex
                                             if (vertices.get(k).getName().equals("l"+loopCounter+"c"+columnCounter))
                                                 v1 = vertices.get(k);
+                                            // Construct the second vertex
                                             if (vertices.get(k).getName().equals("l"+loopCounter+"c"+(columnCounter+1)))
                                                 v2 = vertices.get(k);
                                         }
+                                        // Construct the edge
                                         Edge e = new Edge(v1, v2, 1);
                                         edges.add(e);
                                     }
@@ -752,6 +783,7 @@ public ArrayList<Vertex> seekNeighbors(Vertex Vertex)
                             /* Finally, we treat the horizontal edges */
                             else if (line.charAt(0) == '+') 
                             {
+                                // We need a specific counter for the columns
                                 int columnCounter = 0;
                                 for (int j = 2 ; j < line.length() ; j += 4)
                                 {
@@ -763,11 +795,14 @@ public ArrayList<Vertex> seekNeighbors(Vertex Vertex)
                                         Vertex v2 = new Vertex();
                                         for (int k = 0; k < vertices.size(); k++)
                                         {
+                                            // Construct the first vertex
                                             if (vertices.get(k).getName().equals("l"+loopCounter2+"c"+columnCounter))
                                                 v1 = vertices.get(k);
+                                            // Construct the second vertex
                                             if (vertices.get(k).getName().equals("l"+(loopCounter2+1)+"c"+(columnCounter)))
                                                 v2 = vertices.get(k);
                                         }
+                                        // Construct the edge
                                         Edge e = new Edge(v1, v2, 1);
                                         edges.add(e);
                                     }
@@ -791,7 +826,7 @@ public ArrayList<Vertex> seekNeighbors(Vertex Vertex)
 		}
                 
                 // Store and return the resulted graph
-                Graph tempGraph = new Graph(vertices, edges);
+                Graph tempGraph = new Graph(vertices, edges, source, terminals);
                 return tempGraph;
     }
     

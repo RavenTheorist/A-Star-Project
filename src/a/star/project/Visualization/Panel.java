@@ -66,10 +66,12 @@ public final class Panel extends JPanel implements KeyListener
         // Specifying terminals and source vertices
         ArrayList<Vertex> terminals = new ArrayList<>();
         terminals.add(this.graph.getVertices().get(graph.getVertices().size()-1));
+        
+        //Update own attributes by the constructed graph attributes
         this.graph.setHeuristic(heuristicPanel);
         this.graph.setSource(graph.getVertices().get(0));
-        
         this.graph.setTerminals(terminals);
+        
         // First Call of A*
         graph.AStar(this.heuristicPanel, graph.getVertices().get(0), terminals);
         
@@ -100,35 +102,45 @@ public final class Panel extends JPanel implements KeyListener
      * @Overrides
      */
     
+    // This is the paintComponent method that will be called each time a modification occurs in the panel
     @Override
     public void paintComponent(Graphics g)
     {
+        // Initialize lists
         ArrayList<Edge> minimalPathEdges;
         minimalPathEdges = new ArrayList<>();
         
         // Panel's defaut parameters initialization
         g.setColor(Color.LIGHT_GRAY);
+        // We cover the panel with a filled rectangle in each iteration, in order to avoid having trails, especially when we need to move the graph
         g.fillRect(0, 0, this.maxXCoordinate + 100, this.maxYCoordinate + 100);
         Graphics2D g2d = (Graphics2D)g;
         Font font = new Font("Arial Black", Font.PLAIN, 16);
         g2d.setFont(font);
         
+        // Take the minimalPath which is a set of vertices, and transform it into a set of related edges => minimalPathEdges
         for (int i = 0 ; i < this.getGraph().getMinimalPath().size() - 1 ; i++)
         {
+            // Initialize two vertices, which will form the next edge
             Vertex firstV = this.graph.getMinimalPath().get(i);
             Vertex secondV = this.graph.getMinimalPath().get(i+1);
+            // currentEdge is the edge under construction
             Edge currentEdge = new Edge();
+            // We search an existing edge in the set of edges of the graph
             for (int j = 0 ; j < this.getGraph().getEdges().size() ; j++)
             {
                 if ((this.graph.getEdges().get(j).getFirstVertex().getName().equals(firstV.getName())) && (this.graph.getEdges().get(j).getSecondVertex().getName().equals(secondV.getName())))
                 {
+                    // If exists, than pass it to currentEdge
                     currentEdge = new Edge(firstV, secondV, this.graph.getEdges().get(j).getWeight());
                 }
                 if ((this.graph.getEdges().get(j).getFirstVertex().getName().equals(secondV.getName())) && (this.graph.getEdges().get(j).getSecondVertex().getName().equals(firstV.getName())))
                 {
+                    // If exists in one way or another, than pass it to currentEdge
                     currentEdge = new Edge(firstV, secondV, this.graph.getEdges().get(j).getWeight());
                 }
             }
+            // Finally, add it to the minimalPathEdges set
             minimalPathEdges.add(currentEdge);
         }
         
@@ -203,8 +215,16 @@ public final class Panel extends JPanel implements KeyListener
             
             // Draw a circle at the extracted coordinates
             g.setColor(Color.gray);
-            if ((i == 0) || (i == this.graph.getN() - 1))
+            
+            // If it's a source or a terminal, than draw it in... pink ?
+            if (this.graph.getVertices().get(i).getName().equals(this.graph.getSource().getName()))
                 g.setColor(Color.pink);
+            for (int j = 0 ; j < this.graph.getTerminals().size() ; j++)
+            {
+                if(this.graph.getVertices().get(i).getName().equals(this.graph.getTerminals().get(j).getName()))
+                    g.setColor(Color.ORANGE);
+            }
+            
             g.fillOval(x, y, 50, 50);
             // ...with some circle decorations
             g.setColor(Color.blue);
