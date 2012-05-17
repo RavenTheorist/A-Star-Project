@@ -13,6 +13,6 @@ public class AStarProject
 {
     public static void main(String[] args) throws IOException
     {
-        Frame f = new Frame("normal");
+        Frame f = new Frame("maze");
     }
 }

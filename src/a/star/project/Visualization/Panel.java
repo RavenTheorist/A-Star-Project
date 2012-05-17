@@ -5,7 +5,6 @@ import a.star.project.GraphImplementation.Graph;
 import a.star.project.GraphImplementation.Vertex;
 import java.awt.Color;
 import java.awt.Font;
-import javax.swing.JPanel;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
@@ -14,6 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JPanel;
 
 /**
  * Frame Main Content Panel Implementation
@@ -51,12 +51,22 @@ public final class Panel extends JPanel implements KeyListener
         // Creating graph form text file
         try
         {
-            if (graphType.equals("normal"))
-                graph = new Graph("graph1.txt");
-            else if(graphType.equals("chessboard"))
-                graph = new Graph();
-            else if(graphType.equals("maze"))
-                graph = new Graph("labyrinthe.txt", 2);
+            switch (graphType)
+            {
+                case "normal":
+                    graph = new Graph("graph2.txt");
+                    break;
+                case "chessboard":
+                    graph = new Graph();
+                    break;
+                case "maze":
+                    graph = new Graph("labyrinthe.txt", 2);
+                    break;
+                default:
+                    System.out.println("Graph type \"" + graphType + "\" is unknown. Considering normal graphs.");
+                    graph = new Graph("graph2.txt");
+                    break;
+            }
         }
         catch (IOException ex)
         {
@@ -144,8 +154,6 @@ public final class Panel extends JPanel implements KeyListener
             minimalPathEdges.add(currentEdge);
         }
         
-        
-        
         ///***** Calling AStar method with the appropriate parameters *****///
         if (first)
             graph.AStar(this.heuristicPanel, this.graph.getSource(), this.graph.getTerminals());
@@ -216,13 +224,18 @@ public final class Panel extends JPanel implements KeyListener
             // Draw a circle at the extracted coordinates
             g.setColor(Color.gray);
             
-            // If it's a source or a terminal, than draw it in... pink ?
-            if (this.graph.getVertices().get(i).getName().equals(this.graph.getSource().getName()))
-                g.setColor(Color.pink);
-            for (int j = 0 ; j < this.graph.getTerminals().size() ; j++)
+            // If there is any source
+            if(this.graph.getSource() != null)
             {
-                if(this.graph.getVertices().get(i).getName().equals(this.graph.getTerminals().get(j).getName()))
-                    g.setColor(Color.ORANGE);
+                // If it's a source or a terminal, than draw it in... pink ?
+                if (this.graph.getVertices().get(i).getName().equals(this.graph.getSource().getName()))
+                    g.setColor(Color.pink);
+                // But! if it's a terminal vertex, then draw it in... orange ^^
+                for (int j = 0 ; j < this.graph.getTerminals().size() ; j++)
+                {
+                    if(this.graph.getVertices().get(i).getName().equals(this.graph.getTerminals().get(j).getName()))
+                        g.setColor(Color.ORANGE);
+                }
             }
             
             g.fillOval(x, y, 50, 50);
@@ -253,10 +266,12 @@ public final class Panel extends JPanel implements KeyListener
         String heuristicUsed = "Heuristic Used : ";
         if (this.getHeuristicPanel().equals("euclidean"))
         {
+            // If it's about a known heuristic, then print it
             heuristicUsed += this.getHeuristicPanel() + ".";
         }
         else
         {
+            // Else, print "None"
             heuristicUsed += "None.";
         }
         g2d.drawString(heuristicUsed, 5, 16);
@@ -288,6 +303,15 @@ public final class Panel extends JPanel implements KeyListener
         g2d.setFont(font);
         g2d.setColor(Color.black);
         g2d.drawString("minimal path", 14, 47);
+        
+        // If there is no possible path between the source and the terminal vertices
+        if ((minimalPathEdges.isEmpty()) && (this.graph.getSource() != null))
+        {
+            font = new Font("Arial Black", Font.PLAIN, 16);
+            g2d.setColor(Color.red);
+            g2d.setFont(font);
+            g2d.drawString("Warning : Path obstructed !", 7, 70);
+        }
     }
     
     
