@@ -11,6 +11,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JPanel;
@@ -51,20 +52,59 @@ public final class Panel extends JPanel implements KeyListener
         // Creating graph form text file
         try
         {
+            // We will use this to verify the integers read from the user
+            int readInteger = -1;
+            // Open the right type of graph occording to the content of the given graphType
             switch (graphType)
             {
+                // Normal graphs type
                 case "normal":
-                    graph = new Graph("graph2.txt");
+                    while (readInteger == -1)
+                    {
+                        // Let the the user choose between graph 1 and 2
+                        System.out.print("Please select a graph (write 1 or 2) : ");
+                        Scanner sc = new Scanner(System.in);
+                        readInteger = sc.nextInt();
+                        if (readInteger == 1)
+                            graph = new Graph("graph1.txt");
+                        else if (readInteger == 2)
+                            graph = new Graph("graph2.txt");
+                        else
+                        {
+                            // Print error
+                            System.out.println("Wrong number.");
+                            readInteger = -1;
+                        }
+                    }    
                     break;
+                // Chessboard type chosen
                 case "chessboard":
                     graph = new Graph();
                     break;
+                // Maze type chosen
                 case "maze":
                     graph = new Graph("labyrinthe.txt", 2);
                     break;
+                // If anything else given, consider a normal graph
                 default:
                     System.out.println("Graph type \"" + graphType + "\" is unknown. Considering normal graphs.");
-                    graph = new Graph("graph2.txt");
+                    while (readInteger == -1)
+                    {
+                        // Let the the user choose between graph 1 and 2
+                        System.out.print("Please select a graph (write 1 or 2) : ");
+                        Scanner sc = new Scanner(System.in);
+                        readInteger = sc.nextInt();
+                        if (readInteger == 1)
+                            graph = new Graph("graph1.txt");
+                        else if (readInteger == 2)
+                            graph = new Graph("graph2.txt");
+                        else
+                        {
+                            // Print error
+                            System.out.println("Wrong number.");
+                            readInteger = -1;
+                        }
+                    }    
                     break;
             }
         }
@@ -128,6 +168,9 @@ public final class Panel extends JPanel implements KeyListener
         Font font = new Font("Arial Black", Font.PLAIN, 16);
         g2d.setFont(font);
         
+        // We will calculate the total distance of the generated minimal path and store it in totalDistance
+        int totalDistance = 0;
+        
         // Take the minimalPath which is a set of vertices, and transform it into a set of related edges => minimalPathEdges
         for (int i = 0 ; i < this.getGraph().getMinimalPath().size() - 1 ; i++)
         {
@@ -136,6 +179,7 @@ public final class Panel extends JPanel implements KeyListener
             Vertex secondV = this.graph.getMinimalPath().get(i+1);
             // currentEdge is the edge under construction
             Edge currentEdge = new Edge();
+            
             // We search an existing edge in the set of edges of the graph
             for (int j = 0 ; j < this.getGraph().getEdges().size() ; j++)
             {
@@ -150,6 +194,8 @@ public final class Panel extends JPanel implements KeyListener
                     currentEdge = new Edge(firstV, secondV, this.graph.getEdges().get(j).getWeight());
                 }
             }
+            // Calculate the total distance of the minimal path
+            totalDistance += currentEdge.getWeight();
             // Finally, add it to the minimalPathEdges set
             minimalPathEdges.add(currentEdge);
         }
@@ -311,6 +357,16 @@ public final class Panel extends JPanel implements KeyListener
             g2d.setColor(Color.red);
             g2d.setFont(font);
             g2d.drawString("Warning : Path obstructed !", 7, 70);
+        }
+        else
+        {
+            font = new Font("Arial Black", Font.PLAIN, 16);
+            Color c;
+            c = Color.GREEN;
+            c = c.darker();
+            g2d.setColor(c);
+            g2d.setFont(font);
+            g2d.drawString("Total distance : " + totalDistance, 7, 70);
         }
     }
     
