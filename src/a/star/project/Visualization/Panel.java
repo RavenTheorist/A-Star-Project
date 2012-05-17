@@ -260,8 +260,34 @@ public final class Panel extends JPanel implements KeyListener
             heuristicUsed += "None.";
         }
         g2d.drawString(heuristicUsed, 5, 16);
-            
         
+        // Show source caption
+        g.setColor(Color.black);
+        g.drawRect(6, 20, 6, 6);
+        g.setColor(Color.pink);
+        g.fillRect(7, 21, 5, 5);
+        font = new Font("Arial", Font.PLAIN, 10);
+        g2d.setFont(font);
+        g2d.setColor(Color.black);
+        g2d.drawString("source vertex", 14, 26);
+        
+        // Show terminals caption
+        g.setColor(Color.black);
+        g.drawRect(6, 30, 6, 6);
+        g.setColor(Color.orange);
+        g.fillRect(7, 31, 5, 5);
+        font = new Font("Arial", Font.PLAIN, 10);
+        g2d.setFont(font);
+        g2d.setColor(Color.black);
+        g2d.drawString("terminal vertices", 14, 37);
+        
+        // Show minimal path caption
+        g.setColor(Color.red);
+        g.drawLine(6, 44, 10, 44);
+        font = new Font("Arial", Font.PLAIN, 10);
+        g2d.setFont(font);
+        g2d.setColor(Color.black);
+        g2d.drawString("minimal path", 14, 47);
     }
     
     
