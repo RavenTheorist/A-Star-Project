@@ -10,6 +10,10 @@ import java.util.ArrayList;
 
 public class Vertex
 {
+    /*
+     * Vertex Attributes
+     */
+    
     // The vertex name
     private String name;
     // The x coordinate
@@ -19,7 +23,7 @@ public class Vertex
     // List of the neighbors of the vertex
     private ArrayList<Vertex> neighbors;
     
-    /// A* purpose attributes :
+    /* A* purpose attributes */
     // Distance
     private int g;
     // Heuristic

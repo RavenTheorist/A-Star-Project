@@ -22,6 +22,10 @@ import java.util.logging.Logger;
  */
 public final class Panel extends JPanel implements KeyListener
 {
+    /*
+     * Panel Attributes
+     */
+    
     // The max X and Y vertices coordinates needs to be passed to the JFrame to make it adapt its size
     private int maxXCoordinate;
     private int maxYCoordinate;
@@ -51,6 +55,8 @@ public final class Panel extends JPanel implements KeyListener
                 graph = new Graph("graph1.txt");
             else if(graphType.equals("chessboard"))
                 graph = new Graph();
+            else if(graphType.equals("maze"))
+                graph = new Graph("labyrinthe.txt", 2);
         }
         catch (IOException ex)
         {

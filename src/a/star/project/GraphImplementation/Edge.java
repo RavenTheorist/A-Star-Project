@@ -8,6 +8,10 @@ package a.star.project.GraphImplementation;
 
 public class Edge
 {
+    /*
+     * Edge Attributes
+     */
+    
     // The first vertex name
     private Vertex firstVertex;
     // The second vertex name

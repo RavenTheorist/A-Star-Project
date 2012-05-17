@@ -12,6 +12,10 @@ import java.util.Scanner;
 
 public final class Graph
 {
+    /*
+     * Graph Attributes
+     */
+    
     // Vertices' List
     private ArrayList<Vertex> vertices;
     // Edges' List
@@ -35,6 +39,7 @@ public final class Graph
      * Constructors
      */
     
+    // This constructor is used for the chessboard
     public Graph()
     {
         // Initialization
@@ -94,21 +99,16 @@ public final class Graph
         
         // Edges construction
         // Start construction by the lines
-        int compteur = 0;
         for (int i = 0 ; i < n-1 ; i++)
         {
             Vertex v1 = this.vertices.get(i);
             Vertex v2 = this.vertices.get(i+1);
             
             if (!(((i+1) % cols) == 0))
-            {
                 this.edges.add(new Edge(v1, v2, 1));
-                compteur++;
-            }
         }
         
         // Constructing the columns
-        
         for (int i = 0 ; i < cols ; i++)
         {
             for (int j = 1 ; j < lines ; j++)
@@ -116,15 +116,9 @@ public final class Graph
                 Vertex v1 = this.vertices.get(i);
                 Vertex v2 = this.vertices.get(j*cols+i);
                 
-
-                    this.edges.add(new Edge(v1, v2, 1));
-                    compteur++;
-
+                this.edges.add(new Edge(v1, v2, 1));
             }
         }
-        
-        System.out.println("Compteur : " + compteur);
-        
     }
     
     public Graph(ArrayList<Vertex> vertices, ArrayList<Edge> edges)
@@ -140,6 +134,19 @@ public final class Graph
     {
         // Extract the graph from the file
         Graph tempGraph = fileToGraph(fileName);
+        
+        this.vertices = tempGraph.getVertices();
+        this.edges = tempGraph.getEdges();
+        this.n = tempGraph.getN();
+        this.m = tempGraph.getM();
+        this.minimalPath = new ArrayList<>();
+    }
+    
+    // Constructor used for the maze
+    public Graph(String fileName, int a) throws IOException
+    {
+        // Extract the graph from the file
+        Graph tempGraph = fileToMaze(fileName);
         
         this.vertices = tempGraph.getVertices();
         this.edges = tempGraph.getEdges();
@@ -601,6 +608,176 @@ public ArrayList<Vertex> seekNeighbors(Vertex Vertex)
                                 secondVertex.addNeighbor(firstVertex);
                             }
                         }
+                        // Close text file
+                        textFile.close();
+		}
+                catch (FileNotFoundException e)
+                {
+			System.out.println(e.getMessage());
+		}
+                catch (IOException e)
+                {
+			System.out.println(e.getMessage());
+		}
+                
+                // Store and return the resulted graph
+                Graph tempGraph = new Graph(vertices, edges);
+                return tempGraph;
+    }
+    
+    // This method opens a text file than transform its content to a graph
+    public static Graph fileToMaze(String fileName) throws IOException
+    {
+		String line;
+		String file = fileName;
+                ArrayList<Vertex> vertices = new ArrayList<>();
+                ArrayList<Edge> edges = new ArrayList<>();
+                Vertex source = new Vertex();
+                ArrayList<Vertex> terminals = new ArrayList<>();
+
+		BufferedReader textFile;
+		try {
+                        // Opening the text file
+			textFile = new BufferedReader(new FileReader(new File(file)));
+			if (textFile == null)
+                        {
+				throw new FileNotFoundException("File not found : " + file);
+			}
+                        
+                        // Put a mark in order to be able to reset the cursor up to this point
+                        int BUFFER_SIZE = 1000;
+                        textFile.mark(BUFFER_SIZE);
+                        
+                        // Read first line
+                        line = textFile.readLine();
+                        // Count the number of columns
+                        String s[] = line.split("-");
+                        int cols = s.length - 1;
+                        
+                        // Count the number of lines
+                        int lines = 0;
+                        // Count also the number of lines in the text file except the first one
+                        int textLines = 0;
+                        while ((line = textFile.readLine()) != null)
+                        {
+                            textLines++;
+                            if (line.charAt(0) == '|')
+                                lines++;
+                        }
+                        
+                        // Construction of vertices
+                        for (int l = 0 ; l < lines ; l++)
+                        {
+                            for (int c = 0 ; c < cols ; c++)
+                            {
+                                vertices.add(new Vertex(("l" + l + "c" + c), (c * 100), (l * 100)));
+                            }
+                        }
+                        
+                        // Rewind the stream back to the mark
+                        textFile.reset();
+                        
+                        // Read first line to ignore it
+                        textFile.readLine();
+                        
+                        int loopCounter = 0;
+                        int loopCounter2 = 0;
+                        // Construction of edges, source vertex and terminal vertices
+                        for (int i = 0 ; i < textLines - 1 ; i++)
+                        {
+                            // For each read line
+                            line = textFile.readLine();
+                            // If it's about vertical edges
+                            if (line.charAt(0) == '|')
+                            {
+                                /* Firstly, we treat the content of every square */
+                                // We need a counter that is specific the above condition
+                                
+                                // columnCounter indicate the column of the current vertex
+                                int columnCounter = 0;
+                                // Sweep all the columns, jumping from square to square and directly into the middle of each square
+                                for (int j = 2 ; j < line.length() ; j += 4)
+                                {
+                                    // If the square contains an 's'
+                                    if (line.charAt(j) == 's')
+                                    {
+                                        // It means it's a source, so we save it
+                                        for (int k = 0; k < vertices.size(); k++)
+                                        {
+                                            if (vertices.get(k).getName().equals("l"+loopCounter+"c"+columnCounter))
+                                                source = vertices.get(k);
+                                        }
+                                    }
+                                    // If the square contains a 't'
+                                    else if(line.charAt(j) == 't')
+                                    {
+                                        // It means it's a terminal vertex, so we save it
+                                        Vertex terminal = new Vertex();
+                                        for (int k = 0; k < vertices.size(); k++)
+                                        {
+                                            if (vertices.get(k).getName().equals("l"+loopCounter+"c"+columnCounter))
+                                                terminals.add(vertices.get(k));
+                                        }
+                                    }
+                                    columnCounter++;
+                                }
+                                
+                                /* Secondly, we treat the edges */
+                                // re-initializing columnCounter to zero
+                                // Sweep all the columns, jumping from edge to edge
+                                columnCounter = 0;
+                                for (int j = 4 ; j < line.length() ; j += 4)
+                                {
+                                    // If there's a ' '
+                                    if ((line.charAt(j) == ' ') && (j != line.length()-1))
+                                    {
+                                        // It means it's an edge, so we save it
+                                        Vertex v1 = new Vertex();
+                                        Vertex v2 = new Vertex();
+                                        for (int k = 0; k < vertices.size(); k++)
+                                        {
+                                            if (vertices.get(k).getName().equals("l"+loopCounter+"c"+columnCounter))
+                                                v1 = vertices.get(k);
+                                            if (vertices.get(k).getName().equals("l"+loopCounter+"c"+(columnCounter+1)))
+                                                v2 = vertices.get(k);
+                                        }
+                                        Edge e = new Edge(v1, v2, 1);
+                                        edges.add(e);
+                                    }
+                                    columnCounter++;
+                                }
+                                loopCounter++;
+                            }
+                            
+                            /* Finally, we treat the horizontal edges */
+                            else if (line.charAt(0) == '+') 
+                            {
+                                int columnCounter = 0;
+                                for (int j = 2 ; j < line.length() ; j += 4)
+                                {
+                                    // If there's a ' '
+                                    if (line.charAt(j) == ' ')
+                                    {
+                                        // It means it's an edge, so we save it
+                                        Vertex v1 = new Vertex();
+                                        Vertex v2 = new Vertex();
+                                        for (int k = 0; k < vertices.size(); k++)
+                                        {
+                                            if (vertices.get(k).getName().equals("l"+loopCounter2+"c"+columnCounter))
+                                                v1 = vertices.get(k);
+                                            if (vertices.get(k).getName().equals("l"+(loopCounter2+1)+"c"+(columnCounter)))
+                                                v2 = vertices.get(k);
+                                        }
+                                        Edge e = new Edge(v1, v2, 1);
+                                        edges.add(e);
+                                    }
+                                    columnCounter++;
+                                }
+                                loopCounter2++;
+                            }
+                            //System.out.println(line);
+                        }
+                        
                         // Close text file
                         textFile.close();
 		}

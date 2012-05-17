@@ -14,6 +14,10 @@ import javax.swing.JFrame;
 
 public class Frame extends JFrame
 {
+    /*
+     * Frame Attributes
+     */
+    
     // Content panel of the frame
     private Panel panel;
     
