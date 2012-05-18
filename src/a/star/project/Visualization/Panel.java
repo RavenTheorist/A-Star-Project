@@ -51,8 +51,6 @@ public final class Panel extends JPanel implements KeyListener
         // Creating graph form text file
         try
         {
-            // We will use this to verify the integers read from the user
-            int readInteger = -1;
             // Open the right type of graph occording to the content of the given graphType
             switch (graphType)
             {
@@ -84,17 +82,27 @@ public final class Panel extends JPanel implements KeyListener
             Logger.getLogger(Panel.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        // Specifying terminals and source vertices
-        ArrayList<Vertex> terminals = new ArrayList<>();
-        terminals.add(this.graph.getVertices().get(graph.getVertices().size()-1));
-        
-        //Update own attributes by the constructed graph attributes
-        this.graph.setHeuristic(heuristicPanel);
-        this.graph.setSource(graph.getVertices().get(0));
-        this.graph.setTerminals(terminals);
-        
-        // First Call of A*
-        graph.AStar(this.heuristicPanel, graph.getVertices().get(0), terminals);
+        // If it's a maze than we have to keep the source and terminal vertices taken from the file
+        if (graphType.equals("maze"))
+        {
+            // First Call of A*
+            graph.AStar(this.heuristicPanel, graph.getSource(), graph.getTerminals());
+        }
+        // If not, we specify the first created vertex as the source vertex and the last one as a terminal
+        else
+        {
+            // Specifying terminals and source vertices
+            ArrayList<Vertex> terminals = new ArrayList<>();
+            terminals.add(this.graph.getVertices().get(graph.getVertices().size()-1));
+            
+            //Update own attributes by the constructed graph attributes
+            this.graph.setHeuristic(heuristicPanel);
+            this.graph.setSource(graph.getVertices().get(0));
+            this.graph.setTerminals(terminals);
+            
+            // First Call of A*
+            graph.AStar(this.heuristicPanel, graph.getVertices().get(0), terminals);
+        }
         
         // Calculating max and min for both X and Y coordinates of all vertices in order to adapt the JFrame's size
         this.maxXCoordinate = graph.getMaxXCoordinate();

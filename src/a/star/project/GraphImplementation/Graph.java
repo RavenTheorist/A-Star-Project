@@ -159,11 +159,14 @@ public final class Graph
         // Extract the graph from the file
         Graph tempGraph = fileToMaze(fileName);
         
+        // Update own attributes using the resulted tempGraph
         this.vertices = tempGraph.getVertices();
         this.edges = tempGraph.getEdges();
-        this.n = tempGraph.getN();
-        this.m = tempGraph.getM();
+        this.n = tempGraph.getVertices().size();
+        this.m = tempGraph.getEdges().size();
         this.minimalPath = new ArrayList<>();
+        this.source = tempGraph.getSource();
+        this.terminals = tempGraph.getTerminals();
     }
     
     public Graph(String fileName, String sourceName, String[] terminals) throws IOException
@@ -171,10 +174,11 @@ public final class Graph
         // Extract the graph from the file
         Graph tempGraph = fileToGraph(fileName);
         
+        // Update own attributes using the resulted tempGraph
         this.vertices = tempGraph.getVertices();
         this.edges = tempGraph.getEdges();
-        this.n = tempGraph.getN();
-        this.m = tempGraph.getM();
+        this.n = tempGraph.getVertices().size();
+        this.m = tempGraph.getEdges().size();
         this.terminals = new ArrayList<>();
         this.minimalPath = new ArrayList<>();
         

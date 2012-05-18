@@ -15,7 +15,7 @@ public class AStarProject
     {
         // First argument : Choice must be among {"graph1", "graph2", "chessboard", "maze"}. Any other choice will be treated as "graph1"
         // Second argument : Choice can be "euclidean". Anything else will make it work without heuristic
-        Frame f = new Frame("d", "euclidean");
+        Frame f = new Frame("maze", "euclidean");
     }
 }
 
