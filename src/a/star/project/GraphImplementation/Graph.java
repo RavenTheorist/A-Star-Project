@@ -213,7 +213,7 @@ public final class Graph
             }
             
             // Everything's ok, we are now ready to lauch the A* Algorithm
-            Vertex result = AStar("euclidean");
+            AStar(this.heuristic);
         }
         else
             System.err.println("Graph Constructor : \"The source vertex doesn't exist !\"");
@@ -242,12 +242,19 @@ public final class Graph
         // Clearing minimalPath and terminals contents
         this.minimalPath = new ArrayList<>();
         this.terminals = new ArrayList<>();
-        
         // Update the used heuristic
-        if (h.toLowerCase().equals("euclidean"))
-            this.heuristic = "Euclidean";
-        else
-            this.heuristic = h;
+        switch (h.toLowerCase())
+        {
+            case "euclidean":
+                this.heuristic = "euclidean";
+                break;
+            case "manhattan":
+                this.heuristic = "manhattan";
+                break;
+            default:
+                this.heuristic = h;
+                break;
+        }
         Vertex s = this.getSource();
         // The set of tentative nodes to be evaluated
         ArrayList<Vertex> Opened = new ArrayList<>();
@@ -259,9 +266,15 @@ public final class Graph
         ArrayList<Vertex> terminalsList = this.getTerminals();
         // Distance of s is 0 since it's the starting point
         s.setG(0);
-        
-        if (h.toLowerCase().equals("euclidean"))
-            s.setF(euclideanHeuristic(s));
+        switch (h.toLowerCase())
+        {
+            case "euclidean":
+                s.setF(euclideanHeuristic(s));
+                break;
+            case "manhattan":
+                s.setF(manhattanHeuristic(s));
+                break;
+        }
         
         // We make s the parent of its own self
         s.setParent(s);
@@ -313,11 +326,15 @@ public final class Graph
                     {
                         // Get weight of the relating edge (x, succ)
                         succ.get(j).setG(x.getG() + this.cost(x, succ.get(j)));
-
                         // Carlculate F using the right heuristic
-                        if(h.toLowerCase().equals("euclidean"))
+                        switch (h.toLowerCase())
                         {
-                            succ.get(j).setF(succ.get(j).getG() + euclideanHeuristic(succ.get(j)));
+                            case "euclidean":
+                                succ.get(j).setF(succ.get(j).getG() + euclideanHeuristic(succ.get(j)));
+                                break;
+                            case "manhattan":
+                                succ.get(j).setF(succ.get(j).getG() + manhattanHeuristic(succ.get(j)));
+                                break;
                         }
                         
                          // Set the x as parent of j
@@ -341,8 +358,15 @@ public final class Graph
         // Update the graph attributes
         if (h != null)
         {
-            if (h.equals("euclidean"))
-                this.heuristic = "euclidean";
+            switch (h)
+            {
+                case "euclidean":
+                    this.heuristic = "euclidean";
+                    break;
+                case "manhattan":
+                    this.heuristic = "manhattan";
+                    break;
+            }
         }
         else
             this.heuristic = h;
@@ -360,9 +384,15 @@ public final class Graph
         ArrayList<Vertex> terminalsList = terminals;
         // Distance of s is 0 since it's the starting point
         s.setG(0);
-        
-        if (h.toLowerCase().equals("euclidean"))
-            s.setF(euclideanHeuristic(s));
+        switch (h.toLowerCase())
+        {
+            case "euclidean":
+                s.setF(euclideanHeuristic(s));
+                break;
+            case "manhattan":
+                s.setF(manhattanHeuristic(s));
+                break;
+        }
         
         // We make s the parent of its own self
         s.setParent(s);
@@ -414,13 +444,16 @@ public final class Graph
                     {
                         // Get weight of the relating edge (x, succ)
                         succ.get(j).setG(x.getG() + this.cost(x, succ.get(j)));
-
                         // Carlculate F using the right heuristic
-                        if(this.heuristic.toLowerCase().equals("euclidean"))
+                        switch (h.toLowerCase())
                         {
-                            succ.get(j).setF(succ.get(j).getG() + euclideanHeuristic(succ.get(j)));
+                            case "euclidean":
+                                succ.get(j).setF(succ.get(j).getG() + euclideanHeuristic(succ.get(j)));
+                                break;
+                            case "manhattan":
+                                succ.get(j).setF(succ.get(j).getG() + manhattanHeuristic(succ.get(j)));
+                                break;
                         }
-                        
                          // Set the x as parent of j
                          succ.get(j).setParent(x);
                          // Finally adds the neighbor to the opened set of vertices
@@ -550,9 +583,30 @@ public final class Graph
         {
          // Calculating distance using pythagore
          distance = (int) Math.sqrt(Math.pow(((this.getTerminals().get(i).getX()) - (x.getX())), 2) + Math.pow(((this.getTerminals().get(i).getY()) - (x.getY())), 2));
-         // If the distance si la distance avec ce Vertex terminal est la plus courte c'est elle qu'on retournera
+         // If the distance from this terminal vertex is the smallest
          if (distance < min)
          {
+             // Take it as the minimal distance to return
+             min = distance;
+         }
+        }
+        return min;
+    }
+    
+    // Manhatten heuristic, another possible heuristic
+    public int manhattanHeuristic(Vertex x)
+    {
+        int min = Integer.MAX_VALUE;
+        int distance;
+        // For each terminal vertex
+        for(int i = 0 ; i < this.terminals.size() ; i++)
+        {
+         // Calculate the distance = the distances on X axins + the distance of the Y axis
+         distance = (int) Math.abs((this.terminals.get(i).getX()) - (x.getX())) + Math.abs((this.terminals.get(i).getY()) - (x.getY())) ;
+         // If the distance from the terminal vertex is the smallest
+         if (distance < min)
+         {
+             // Take it as the minimal distance to return
              min = distance;
          }
         }

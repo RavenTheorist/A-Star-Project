@@ -82,6 +82,8 @@ public final class Panel extends JPanel implements KeyListener
             Logger.getLogger(Panel.class.getName()).log(Level.SEVERE, null, ex);
         }
         
+        this.heuristicPanel = heuristic;
+        
         // If it's a maze than we have to keep the source and terminal vertices taken from the file
         if (graphType.equals("maze"))
         {
@@ -289,15 +291,20 @@ public final class Panel extends JPanel implements KeyListener
         g2d.setFont(font);
         
         String heuristicUsed = "Heuristic Used : ";
-        if (this.getHeuristicPanel().equals("euclidean"))
+        switch (this.getHeuristicPanel())
         {
-            // If it's about a known heuristic, then print it
-            heuristicUsed += this.getHeuristicPanel() + ".";
-        }
-        else
-        {
-            // Else, print "None"
-            heuristicUsed += "None.";
+            case "euclidean":
+                // If it's about an Euclidean heuristic, then print it
+                heuristicUsed += this.getHeuristicPanel() + ".";
+                break;
+            case "manhattan":
+                // If it's about a Manhattan heuristic, then print it
+                heuristicUsed += this.getHeuristicPanel() + ".";
+                break;
+            default:
+                // Else, print "None"
+                heuristicUsed += "None.";
+                break;
         }
         g2d.drawString(heuristicUsed, 5, 16);
         

@@ -127,7 +127,22 @@ public class Frame extends JFrame
                 }
             }
             
-           
+            /*
+            String heuristic;
+            
+            // Ask for heuristic
+            System.out.print("Please select heuristic : ");
+            Scanner sc = new Scanner(System.in);
+            heuristic = sc.nextLine();
+            if (!(heuristic.equals("euclidean") || heuristic.equals("manhattan")))
+            {
+                System.out.println("Unknown heuristic ! Continuing with no heuristic...");
+            }
+            this.panel.setHeuristicPanel(heuristic);
+            this.panel.getGraph().setHeuristic(heuristic);
+            this.panel.getGraph().AStar(this.panel.getHeuristicPanel(), source, terminals);
+            */
+            
             this.panel.getGraph().setTerminals(terminals);
             this.panel.getGraph().setSource(source);
 
