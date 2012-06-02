@@ -3,16 +3,17 @@ package a.star.project.Visualization;
 import a.star.project.GraphImplementation.Edge;
 import a.star.project.GraphImplementation.Graph;
 import a.star.project.GraphImplementation.Vertex;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 /**
@@ -20,6 +21,8 @@ import javax.swing.JPanel;
  * 
  * @author Amine Elkhalsi <aminekhalsi@hotmail.com>
  */
+
+// This is the class that instanciates the graphs and call the A* Algorithm
 public final class Panel extends JPanel implements KeyListener
 {
     /*
@@ -34,6 +37,10 @@ public final class Panel extends JPanel implements KeyListener
     // The graph that we'll be working with
     private Graph graph = null;
     
+    // ComboBoxes
+    private JComboBox sourceComboBox;
+    private JComboBox terminalComboBox;
+    
     // Internat attribute
     boolean first = true;
     
@@ -43,8 +50,20 @@ public final class Panel extends JPanel implements KeyListener
     
     public Panel(String graphType, String heuristic)
     {
+        // Initialising attributes
         heuristicPanel = heuristic;
         this.heuristicPanel = heuristic;
+        
+        // Show the source vertex selection ComboBox 
+        this.add(new JLabel("                                                                                Select source"));
+        sourceComboBox = new JComboBox();
+        this.add(sourceComboBox);
+        
+        // Show the terminal vertex selection ComboBox 
+        this.add(new JLabel("Select terminal"));
+        terminalComboBox = new JComboBox();
+        this.add(terminalComboBox);
+        
         // Add Key Listener to enable moving the graph using the arrow keys
         this.addKeyListener(this);
         
@@ -127,6 +146,76 @@ public final class Panel extends JPanel implements KeyListener
             graph = Graph.bringVerticesCloserBy_Y(graph, minYCoordinate - 50);
         }
         first = false;
+        
+        // Filling the two ComboBoxes with the vertices
+        for (int i = 0; i < this.graph.getN(); i++)
+        {
+            this.sourceComboBox.addItem(this.graph.getVertices().get(i).getName());
+            this.terminalComboBox.addItem(this.graph.getVertices().get(i).getName());
+        }
+        
+        // Add ComboBoxes listeners
+        this.sourceComboBox.addItemListener(new SourceItemState());
+        this.terminalComboBox.addItemListener(new TerminalItemState());
+    }
+    
+    /**
+     * Internal Class that implements the ItemListener interface of the source vertex
+    */
+    class SourceItemState implements ItemListener
+    {
+        // When an event is triggered (<=> a selection is done), update the source vertex of the graph
+        @Override
+        public void itemStateChanged(ItemEvent e)
+        {
+            for (int i = 0; i < graph.getN(); i++)
+            {
+                if(graph.getVertices().get(i).getName().equals(e.getItem()))
+                {
+                    // Find the selected source vertex in the vertices list of the graph
+                    graph.setSource(graph.getVertices().get(i));
+                    
+                    // Call A* again
+                    graph.AStar(heuristicPanel, graph.getSource(), graph.getTerminals());
+                    
+                    // Repaint the panel
+                    repaint();
+                    break;
+                }
+            }
+        }
+    }
+    
+    /**
+     * Internal Class that implements the ItemListener interface of the terminal vertex
+    */
+    class TerminalItemState implements ItemListener
+    {
+        // When an event is triggered (<=> a selection is done), update the terminal vertex of the graph
+        @Override
+        public void itemStateChanged(ItemEvent e)
+        {
+            for (int i = 0; i < graph.getN(); i++)
+            {
+                // Find the selected terminal vertex in the vertices list of the graph
+                if(graph.getVertices().get(i).getName().equals(e.getItem()))
+                {
+                    // When found, create a terminals list that will only contain the selected terminal vertex. User can select multiple terminal vertices using the console
+                    ArrayList<Vertex> newTerminal = new ArrayList<>();
+                    newTerminal.add(graph.getVertices().get(i));
+                    
+                    // Update terminal vertices with the new list
+                    graph.setTerminals(newTerminal);
+                    
+                    // Call A* again
+                    graph.AStar(heuristicPanel, graph.getSource(), graph.getTerminals());
+                    
+                    // Repaint the panel
+                    repaint();
+                    break;
+                }
+            }
+        }
     }
     
     /*
@@ -186,56 +275,56 @@ public final class Panel extends JPanel implements KeyListener
             graph.AStar(this.heuristicPanel, this.graph.getSource(), this.graph.getTerminals());
         
        
-            // Edges Visualization
-            for (int i = 0; i < this.graph.getM(); i++)
+        // Edges Visualization
+        for (int i = 0; i < this.graph.getM(); i++)
+        {
+            // Extract the coordinates of both of the vertices that composes the edge
+            int firstVertex_X = this.graph.getEdges().get(i).getFirstVertex().getX();
+            int firstVertex_Y = this.graph.getEdges().get(i).getFirstVertex().getY();
+            int secondVertex_X = this.graph.getEdges().get(i).getSecondVertex().getX();
+            int secondVertex_Y = this.graph.getEdges().get(i).getSecondVertex().getY();
+        
+            
+        
+            // Draw a line between the two vertices
+            g.setColor(Color.blue);
+            g.drawLine(firstVertex_X + 25, firstVertex_Y + 25, secondVertex_X + 25, secondVertex_Y + 25);
+            
+            // If the edge is part of the minimal path
+            boolean isPartOfMinimalPathEdges = false;
+            for (int k = 0; k < minimalPathEdges.size(); k++)
             {
-                // Extract the coordinates of both of the vertices that composes the edge
-                int firstVertex_X = this.graph.getEdges().get(i).getFirstVertex().getX();
-                int firstVertex_Y = this.graph.getEdges().get(i).getFirstVertex().getY();
-                int secondVertex_X = this.graph.getEdges().get(i).getSecondVertex().getX();
-                int secondVertex_Y = this.graph.getEdges().get(i).getSecondVertex().getY();
-            
-                
-            
-                // Draw a line between the two vertices
-                g.setColor(Color.blue);
-                g.drawLine(firstVertex_X + 25, firstVertex_Y + 25, secondVertex_X + 25, secondVertex_Y + 25);
-                
-                // If the edge is part of the minimal path
-                boolean isPartOfMinimalPathEdges = false;
-                for (int k = 0; k < minimalPathEdges.size(); k++)
-                {
-                    if ((this.graph.getEdges().get(i).getFirstVertex().getName().equals(minimalPathEdges.get(k).getFirstVertex().getName())) && (this.graph.getEdges().get(i).getSecondVertex().getName().equals(minimalPathEdges.get(k).getSecondVertex().getName())))
-                        isPartOfMinimalPathEdges = true;
-                    if ((this.graph.getEdges().get(i).getFirstVertex().getName().equals(minimalPathEdges.get(k).getSecondVertex().getName())) && (this.graph.getEdges().get(i).getSecondVertex().getName().equals(minimalPathEdges.get(k).getFirstVertex().getName())))
-                        isPartOfMinimalPathEdges = true;
-                }
-                
-                // If the edge is part of the minimal path
-                if (isPartOfMinimalPathEdges)
-                {
-                    // Draw a colored line between the two vertices
-                    g.setColor(Color.red);
-                    g.drawLine(firstVertex_X + 25, firstVertex_Y + 25, secondVertex_X + 25, secondVertex_Y + 25);
-                }
-            
-                // Calculate the middle of the edge
-                int middleX = (firstVertex_X + secondVertex_X) / 2;
-                int middleY = (firstVertex_Y + secondVertex_Y) / 2;
-            
-                // Draw a rectangle at the middle of each edge
-                g.setColor(Color.white);
-                g.fillRect(middleX + 16, middleY + 16, 17, 17);
-                g2d.setColor(Color.getHSBColor(163, 73, 164));
-                g.setColor(Color.red);
-                g.drawRect(middleX + 16, middleY + 16, 17, 17);
-            
-                // Print the weight of the edge right in the center of the previously created rectangle
-                g2d.setColor(Color.getHSBColor(163, 73, 164));
-                font = new Font("Arial Black", Font.ITALIC, 16);
-                g2d.setFont(font);
-                g2d.drawString(String.valueOf(this.graph.getEdges().get(i).getWeight()), middleX + 19, middleY + 31);
+                if ((this.graph.getEdges().get(i).getFirstVertex().getName().equals(minimalPathEdges.get(k).getFirstVertex().getName())) && (this.graph.getEdges().get(i).getSecondVertex().getName().equals(minimalPathEdges.get(k).getSecondVertex().getName())))
+                    isPartOfMinimalPathEdges = true;
+                if ((this.graph.getEdges().get(i).getFirstVertex().getName().equals(minimalPathEdges.get(k).getSecondVertex().getName())) && (this.graph.getEdges().get(i).getSecondVertex().getName().equals(minimalPathEdges.get(k).getFirstVertex().getName())))
+                    isPartOfMinimalPathEdges = true;
             }
+            
+            // If the edge is part of the minimal path
+            if (isPartOfMinimalPathEdges)
+            {
+                // Draw a colored line between the two vertices
+                g.setColor(Color.red);
+                g.drawLine(firstVertex_X + 25, firstVertex_Y + 25, secondVertex_X + 25, secondVertex_Y + 25);
+            }
+            
+            // Calculate the middle of the edge
+            int middleX = (firstVertex_X + secondVertex_X) / 2;
+            int middleY = (firstVertex_Y + secondVertex_Y) / 2;
+        
+            // Draw a rectangle at the middle of each edge
+            g.setColor(Color.white);
+            g.fillRect(middleX + 16, middleY + 16, 17, 17);
+            g2d.setColor(Color.getHSBColor(163, 73, 164));
+            g.setColor(Color.red);
+            g.drawRect(middleX + 16, middleY + 16, 17, 17);
+        
+            // Print the weight of the edge right in the center of the previously created rectangle
+            g2d.setColor(Color.getHSBColor(163, 73, 164));
+            font = new Font("Arial Black", Font.ITALIC, 16);
+            g2d.setFont(font);
+            g2d.drawString(String.valueOf(this.graph.getEdges().get(i).getWeight()), middleX + 19, middleY + 31);
+        }
         
         
         font = new Font("Arial Black", Font.PLAIN, 16);
@@ -463,32 +552,3 @@ public final class Panel extends JPanel implements KeyListener
         this.heuristicPanel = heuristicPanel;
     }
 }
-
-
-/* Another implementation of the try block in the Panel constructor
-     * try
-        {
-            // We will use this to verify the integers read from the user
-            int readInteger = -1;
-            // Open the right type of graph occording to the content of the given graphType
-            switch (graphType)
-            {
-                // Normal graphs type 1
-                case "graph1":
-                    graph = new Graph("graph1.txt");
-                    break;
-                // Normal graphs type 2
-                case "graph2":
-                    graph = new Graph("graph2.txt");
-                    break;
-                // Chessboard type chosen
-                case "chessboard":
-                    graph = new Graph();
-                    break;
-                // Maze type chosen
-                case "maze":
-                    graph = new Graph("labyrinthe.txt", 2);
-                    break;
-            }
-        }
-     */

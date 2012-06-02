@@ -628,7 +628,8 @@ public final class Graph
                 ArrayList<Edge> edges = new ArrayList<>();
 
 		BufferedReader textFile;
-		try {
+		try
+                {
                         // Opening the text file
 			textFile = new BufferedReader(new FileReader(new File(file)));
 			if (textFile == null)
